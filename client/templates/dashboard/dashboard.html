@@ -1,0 +1,13 @@
+<template name="dashboardShopifyProducts">
+  <div class='container'>
+    <p>Shopify Products helps ease the transistion to ReactionCommerce by enabling the import of existing Shopify products and turning them into ReactionCommerce products.</p>
+    {{#if apiConfigured}}
+      placeholder
+    {{else}}
+      <div class='row'>
+      <h3>Configure your Shopify API Credentials</h3>
+        {{> shopifyProductsSettings}}
+      </div>
+    {{/if}}
+  </div>
+</template>
