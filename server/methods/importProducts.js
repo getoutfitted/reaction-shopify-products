@@ -1,3 +1,21 @@
+let letterSizeMap = {
+  'extra small': 'XS',
+  'small': 'S',
+  'medium': 'M',
+  'large': 'L',
+  'extra large': 'XL',
+  'extra extra large': 'XXL'
+};
+
+function letterSize(size) {
+  let lowerCaseSize = size.toLowerCase();
+  if (letterSizeMap[lowerCaseSize]) {
+    return letterSizeMap[lowerCaseSize];
+  }
+  // if we don't find a match - return size as is
+  return size;
+}
+
 function determineProductType(productType) {
   if (productType === 'Socks'
   || productType === 'Baselayer Top'
@@ -8,18 +26,32 @@ function determineProductType(productType) {
 }
 
 function generateSku(product, color, size) {
-  const sku = product.vendor.substr(0, 3).toUpperCase() +
-    '-' + product.title.substr(0, 3).toUpperCase() +
-    '-' + color.toUpperCase() +
-    '-' + size.toUpperCase();
+  const prodSection = product.vendor.substr(0, 2).toUpperCase() + product.title.substr(0, 2).toUpperCase();
+  const colorWords = color.match(/[A-Za-z\d]\w+/g);
+  let colorSection = '';
+  if (colorWords.length > 1) {
+    _.each(colorWords, function (word) {
+      colorSection = colorSection + word[0];
+    });
+  } else {
+    colorSection = colorWords[0].substr(0, 2).toUpperCase();
+  }
+
+  const sku = prodSection + '-' + colorSection + '-' + letterSize(size);
   return sku;
+}
+
+function generateFakeLocation() {
+  const rooms = ['BGT', 'MJP', 'WJP', 'GLV', 'GOG', 'BAS'];
+  const shelves = [1, 2, 3, 4];
+  const levels = [1, 2, 3, 4];
+  const sections = [1, 2, 3, 4, 5, 6, 7];
+  return _.sample(rooms) + '-S' + _.sample(shelves) + '-L' + _.sample(levels) + '-S' + _.sample(sections);
 }
 
 function setupProductDocument(product) {
   let prod = {}; // init empty object to hold new product.
   let colors = product.body_html.split(':color:')[1].split(',');
-  console.log(colors);
-  console.log(product.product_type);
   let features = product.body_html.split(':whatsincluded:')[1].split(','); // - Array of features or empty
   let aboutVendor = product.body_html.split(':about:')[1]; // Paragraph about the vendor of this product
   let pageTitle = product.handle[0].toUpperCase() + product.handle.split('-').join(' ').substr(1);
@@ -71,7 +103,10 @@ function setupProductDocument(product) {
       let childVariant = {};
       childVariant._id = Random.id();
       childVariant.parentId = variant._id;
+      // XXX consider removing generateSku once we have real data;
       childVariant.sku = generateSku(product, color, size);
+      // XXX Remove generate fake location once we have real data;
+      childVariant.location = generateFakeLocation();
       childVariant.color = color.trim();
       childVariant.size = size.trim();
       childVariant.title = 'size';
@@ -134,7 +169,5 @@ Meteor.methods({
         ReactionCore.Log.info('Product with id: ' + doc._id + ' and shopifyId: ' + doc.shopifyId + ' already exists.');
       }
     });
-  },
-  generateReport: function () {
   }
 });
