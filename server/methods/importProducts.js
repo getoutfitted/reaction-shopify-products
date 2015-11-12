@@ -131,81 +131,32 @@ function setupProductDocument(product) {
 function setupBundleDocument(bundle) {
   let doc = {}; // init empty object to hold new product.
   let colors = bundle.body_html.split(':color:')[1].split(',');
-  let features = bundle.body_html.split(':whatsincluded:')[1].split(','); // - Array of features or empty
-  let aboutVendor = bundle.body_html.split(':about:')[1]; // Paragraph about the vendor of this bundle
-  let pageTitle = bundle.handle[0].toUpperCase() + bundle.handle.split('-').join(' ').substr(1);
-  let sizes = [];
-  if (bundle.product_type === 'Jacket' || bundle.product_type === 'Baselayer Top' || bundle.product_type === 'Midlayer') {
-    sizes = bundle.body_html.split(':jacketsizes:')[1].split(','); // Array of jacket sizes - empty if no jacket.
-  } else if (bundle.product_type === 'Pants' || bundle.product_type === 'Baselayer Bottom') {
-    sizes = bundle.body_html.split(':pantsizes:')[1].split(','); // Array of pants sizes - empty if no pants
-  } else if (bundle.product_type === 'Gloves') {
-    sizes = bundle.body_html.split(':glovesizes:')[1].split(','); // Array of glove sizes - empty if no gloves
-  }
-  // let jacketSizes = product.body_html.split(':jacketsizes:')[1].split(','); // Array of jacket sizes - empty if no jacket.
-  // let pantSizes = product.body_html.split(':pantsizes:')[1].split(','); // Array of pants sizes - empty if no pants
-  // let gloveSizes = product.body_html.split(':glovesizes:')[1].split(','); // Array of glove sizes - empty if no gloves
-  // let goggleTypes = product.body_html.split(':goggletypes:')[1].split(','); // Array of goggle types - empty if no goggles or single type.
-  // let goggleStyle = product.body_html.split(':goggles:')[1]; // Goggle style - for packages - premium mirrored vs standard
-  // let gloves = product.body_html.split(':gloves:')[1]; // Glove style - for packages - premium goretex vs standard
-
-  // Create bundle Object;
+  let midlayer = bundle.body_html.split(':midlayer:')[1].toLowerCase();
   doc.shopId = ReactionCore.getShopId();
   doc.shopifyId = bundle.id.toString();
   doc.title = bundle.title;
-  doc.pageTitle = pageTitle;
   doc.description = bundle.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
-  doc.vendor = bundle.vendor;
-  doc.productType = determineProductType(bundle.product_type);
-  doc.handle = bundle.handle;
-  doc.variants = [];
-  doc.hashtags = bundle.tags.split(',');
-  doc.metafields = [];
-  doc.isVisible = false;
+  doc.hasMidlayer = midlayer.substr(0, 2) === 'no' ? false : true;
+  doc.colorWays = {};
 
-  _.each(features, function (feature) {
-    let metafield = {};
-    metafield.key = 'feature';
-    metafield.value = feature;
-    doc.metafields.push(metafield);
-  });
-
-  doc.metafields.push({key: 'aboutVendor', value: aboutVendor});
-
+  // Create bundle Object;
   _.each(colors, function (color) {
-    let variant = {};
-    variant._id = Random.id();
-    variant.type = 'variant';
-    variant.title = color.trim();
-    variant.optionTitle = 'color';
-    variant.price = '1.00';
-    variant.pricePerDay = '1.00';
-    variant.inventoryQuantity = sizes.length;
-    variant.taxable = true;
-    variant.weight = 1;
-    doc.variants.push(variant);
-
-    _.each(sizes, function (size) {
-      let childVariant = {};
-      childVariant._id = Random.id();
-      childVariant.parentId = variant._id;
-      // XXX consider removing generateSku once we have real data;
-      childVariant.sku = generateSku(product, color, size);
-      // XXX Remove generate fake location once we have real data;
-      childVariant.location = generateFakeLocation();
-      childVariant.color = color.trim();
-      childVariant.size = size.trim();
-      childVariant.title = 'size';
-      childVariant.optionTitle = size.trim();
-      childVariant.inventoryQuantity = 1;
-      childVariant.price = '1.00';
-      childVariant.pricePerDay = '1.00';
-      childVariant.taxable = true;
-      childVariant.weight = 1;
-
-      doc.variants.push(childVariant);
-    });
+    let colorWay = {};
+    if (doc.hasMidlayer) {
+      colorWay.midlayerId = '';
+      colorWay.midlayerColor = '';
+    }
+    colorWay.jacketId = '';
+    colorWay.jacketColor = '';
+    colorWay.pantsId = '';
+    colorWay.pantsColor = '';
+    colorWay.glovesId = '';
+    colorWay.glovesColor = '';
+    colorWay.gogglesId = '';
+    colorWay.gogglesColor = '';
+    doc.colorWays[color] = colorWay;
   });
+
   return doc;
 }
 
@@ -281,15 +232,13 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Access Denied');
     }
 
-    const ShopifyProducts = ReactionCore.Collections.ShopifyProducts;
     const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
     const Bundles = ReactionCore.Collections.Bundles;
-    const Products = ReactionCore.Collections.Products;
     const apikey = shopifyCredentials.key;
     const password = shopifyCredentials.password;
     const domain = 'https://' + shopifyCredentials.shopname + '.myshopify.com';
     const query = '/admin/products.json';
-    const fields = 'id,title,body_html,vendor,product_type,handle,tags';
+    const fields = 'id,title,body_html,product_type';
 
     updateImportStatus('Fetching bundles...');
 
@@ -304,7 +253,7 @@ Meteor.methods({
 
     bundles = res.data.products;
     _.each(bundles, function (bundle, index) {
-      if (product.product_type !== 'Package') {
+      if (bundle.product_type !== 'Package') {
         return false;
       }
 
@@ -320,11 +269,9 @@ Meteor.methods({
       ReactionCore.Log.info('Importing shopify bundle ' + doc.title);
       if (!bundleExists) {
         let status = 'Imported bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
-        bundles.insert(doc);
+        Bundles.insert(doc);
         updateImportStatus(status, bundle);
       }
-      let status = 'Updated bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
-      updateImportStatus(status, bundle);
     });
 
     updateImportStatus('Imported ' + bundles.length + ' bundles.');

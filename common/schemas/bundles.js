@@ -29,6 +29,10 @@ ReactionCore.Schemas.Bundles = new SimpleSchema({
     type: String,
     optional: true
   },
+  hasMidlayer: {
+    type: Boolean,
+    defaultValue: false
+  },
   colorWays: {
     type: Object,
     optional: true,
