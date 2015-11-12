@@ -22,10 +22,6 @@ Package.onUse(function (api) {
   api.addFiles('server/register.js', 'server'); // Register as reaction package
 
   api.addFiles([
-    'server/methods/importProducts.js'
-  ], 'server');
-
-  api.addFiles([
     'common/routes.js',
     'common/collections.js'
   ], ['client', 'server']);
@@ -36,6 +32,11 @@ Package.onUse(function (api) {
     'client/templates/dashboard/dashboard.html',
     'client/templates/dashboard/dashboard.js'
   ], 'client');
+
+  api.addFiles([
+    'server/methods/importProducts.js',
+    'server/publications.js'
+  ], 'server');
 });
 
 Package.onTest(function (api) {

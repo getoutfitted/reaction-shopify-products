@@ -66,7 +66,7 @@ function setupProductDocument(product) {
 
   // Create Product Object;
   prod.shopId = ReactionCore.getShopId();
-  prod.shopifyId = product.id;
+  prod.shopifyId = product.id.toString();
   prod.title = product.title;
   prod.pageTitle = pageTitle;
   prod.description = product.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
@@ -76,6 +76,7 @@ function setupProductDocument(product) {
   prod.variants = [];
   prod.hashtags = product.tags.split(',');
   prod.metafields = [];
+  prod.isVisible = false;
 
   _.each(features, function (feature) {
     let metafield = {};
@@ -120,7 +121,7 @@ function setupProductDocument(product) {
       prod.variants.push(childVariant);
     });
   });
-
+  console.log(prod.shopifyId);
   return prod;
 }
 
@@ -134,9 +135,16 @@ function setupBundleDocument(bundle) {
 }
 
 Meteor.methods({
-  importProducts: function (productType = 'Jacket', createdAtMin = '2015-09-01') {
-    check(createdAtMin, String);
+  'importShopifyProducts/importProducts': function (updateIfExists = false, productType = 'Jacket', createdAtMin = '2015-09-01') {
+    check(updateIfExists, Boolean);
     check(productType, String);
+    check(createdAtMin, String);
+
+    if (!ReactionCore.hasPermission('createProduct')) {
+      throw new Meteor.Error(403, 'Access Denied');
+    }
+
+    const ShopifyProducts = ReactionCore.Collections.ShopifyProducts;
     const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
     const Products = ReactionCore.Collections.Products;
     const apikey = shopifyCredentials.key;
@@ -144,6 +152,9 @@ Meteor.methods({
     const domain = 'https://' + shopifyCredentials.shopname + '.myshopify.com';
     const query = '/admin/products.json';
     const fields = 'id,title,body_html,vendor,product_type,handle,tags';
+    let productExists = '';
+
+    ShopifyProducts.insert({createdAt: new Date, status: 'Fetching products...'});
 
     let res = HTTP.call('GET', domain + query, {
       params: {
@@ -155,19 +166,40 @@ Meteor.methods({
     });
 
     products = res.data.products;
-
-    _.each(products, function (product) {
+    _.each(products, function (product, index) {
+      let doc = {};
       if (product.product_type === 'Package') {
         doc = setupBundleDocument(product);
       } else {
         doc = setupProductDocument(product);
       }
+
       productExists = Products.findOne({shopifyId: doc.shopifyId});
+      ReactionCore.Log.info('Importing shopify product ' + doc.title);
       if (!productExists) {
         Products.insert(doc);
+        ShopifyProducts.insert({
+          status: 'Imported product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
+      } else if (updateIfExists) {
+        ShopifyProducts.insert({
+          status: 'Updated product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
       } else {
-        ReactionCore.Log.info('Product with id: ' + doc._id + ' and shopifyId: ' + doc.shopifyId + ' already exists.');
+        ShopifyProducts.insert({
+          status: 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
       }
+    });
+
+    ShopifyProducts.insert({
+      status: 'Imported ' + products.length + ' products.'
     });
   }
 });
