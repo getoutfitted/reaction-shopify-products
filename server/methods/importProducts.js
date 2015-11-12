@@ -8,7 +8,7 @@ let letterSizeMap = {
 };
 
 function letterSize(size) {
-  let lowerCaseSize = size.toLowerCase();
+  let lowerCaseSize = size.toLowerCase().trim();
   if (letterSizeMap[lowerCaseSize]) {
     return letterSizeMap[lowerCaseSize];
   }
