@@ -139,11 +139,12 @@ Meteor.methods({
     check(updateIfExists, Boolean);
     check(productType, String);
     check(createdAtMin, String);
-    
+
     if (!ReactionCore.hasPermission('createProduct')) {
       throw new Meteor.Error(403, 'Access Denied');
     }
-    console.log(productType);
+
+    const ShopifyProducts = ReactionCore.Collections.ShopifyProducts;
     const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
     const Products = ReactionCore.Collections.Products;
     const apikey = shopifyCredentials.key;
@@ -152,6 +153,8 @@ Meteor.methods({
     const query = '/admin/products.json';
     const fields = 'id,title,body_html,vendor,product_type,handle,tags';
     let productExists = '';
+
+    ShopifyProducts.insert({createdAt: new Date, status: 'Fetching products...'});
 
     let res = HTTP.call('GET', domain + query, {
       params: {
@@ -163,8 +166,7 @@ Meteor.methods({
     });
 
     products = res.data.products;
-
-    _.each(products, function (product) {
+    _.each(products, function (product, index) {
       let doc = {};
       if (product.product_type === 'Package') {
         doc = setupBundleDocument(product);
@@ -176,11 +178,28 @@ Meteor.methods({
       ReactionCore.Log.info('Importing shopify product ' + doc.title);
       if (!productExists) {
         Products.insert(doc);
+        ShopifyProducts.insert({
+          status: 'Imported product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
       } else if (updateIfExists) {
-        ReactionCore.Log.info(doc.title + ' with shopifyId: ' + doc.shopifyId + ' already exists and was updated.');
+        ShopifyProducts.insert({
+          status: 'Updated product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
       } else {
-        ReactionCore.Log.info(doc.title + ' with shopifyId: ' + doc.shopifyId + ' already exists and will not be imported.');
+        ShopifyProducts.insert({
+          status: 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products...',
+          currentProductId: product.id,
+          currentProductTitle: product.title
+        });
       }
+    });
+
+    ShopifyProducts.insert({
+      status: 'Imported ' + products.length + ' products.'
     });
   }
 });

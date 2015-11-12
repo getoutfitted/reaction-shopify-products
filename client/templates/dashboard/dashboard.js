@@ -1,3 +1,7 @@
+Template.dashboardShopifyProducts.onCreated(function () {
+  this.subscribe('ShopifyProducts/CurrentImport');
+});
+
 Template.dashboardShopifyProducts.helpers({
   apiConfigured: function () {
     let shopifyProducts = ReactionCore.Collections.Packages.findOne({
@@ -10,6 +14,13 @@ Template.dashboardShopifyProducts.helpers({
   },
   productType: function () {
     return Session.get('importShopifyProducts/productType');
+  },
+  productImport: function () {
+    return ReactionCore.Collections.ShopifyProducts.findOne();
+  },
+  importStatus: function () {
+    let currentImport = ReactionCore.Collections.ShopifyProducts.findOne();
+    return currentImport;
   }
 });
 
