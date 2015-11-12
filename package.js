@@ -23,6 +23,9 @@ Package.onUse(function (api) {
 
   api.addFiles([
     'common/routes.js',
+    'common/schemas/packageConfig.js',
+    'common/schemas/shopifyProducts.js',
+    'common/schemas/bundles.js',
     'common/collections.js'
   ], ['client', 'server']);
 
@@ -34,8 +37,9 @@ Package.onUse(function (api) {
   ], 'client');
 
   api.addFiles([
-    'server/methods/importProducts.js',
-    'server/publications.js'
+    'server/publications.js',
+    'server/security.js',
+    'server/methods/importProducts.js'
   ], 'server');
 });
 
