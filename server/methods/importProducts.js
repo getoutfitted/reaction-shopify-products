@@ -1,3 +1,5 @@
+/* eslint camelcase: [2, {properties: "never"}] */
+
 let letterSizeMap = {
   'extra small': 'XS',
   'small': 'S',
@@ -79,7 +81,8 @@ function setupProductDocument(product) {
   prod.pageTitle = pageTitle;
   prod.description = product.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
   prod.vendor = product.vendor;
-  prod.productType = determineProductType(product.product_type);
+  prod.type = determineProductType(product.product_type);
+  prod.productType = product.product_type;
   prod.handle = product.handle;
   prod.variants = [];
   prod.hashtags = product.tags.split(',');

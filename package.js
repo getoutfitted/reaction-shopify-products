@@ -35,7 +35,9 @@ Package.onUse(function (api) {
     'client/templates/dashboard/dashboard.html',
     'client/templates/dashboard/dashboard.js',
     'client/templates/dashboard/bundles/bundles.html',
-    'client/templates/dashboard/bundles/bundles.js'
+    'client/templates/dashboard/bundles/bundles.js',
+    'client/templates/dashboard/bundles/bundleDetail/bundle.html',
+    'client/templates/dashboard/bundles/bundleDetail/bundle.js'
   ], 'client');
 
   api.addFiles([

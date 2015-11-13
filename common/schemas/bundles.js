@@ -9,7 +9,7 @@
 ReactionCore.Schemas.Bundles = new SimpleSchema({
   _id: {
     type: String,
-    autoValue: ReactionCore.schemaIdAutoValue,
+    defaultValue: Random.id(),
     index: 1,
     label: 'Bundle ID'
   },

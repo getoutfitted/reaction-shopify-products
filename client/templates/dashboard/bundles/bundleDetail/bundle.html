@@ -1,0 +1,68 @@
+<template name="dashboardBundleDetail">
+  {{!-- navbar --}}
+  <div class='container'>
+    <h1>{{title}}</h1>
+  </div>
+  <div>
+    {{#if Template.subscriptionsReady}}
+      {{#each colors}}
+        {{> dashboardBundleSettings}}
+      {{/each}}
+    {{else}}
+      Loading...
+    {{/if}}
+  </div>
+
+</template>
+
+<template name="dashboardBundleSettings">
+  {{!-- navbar --}}
+  <div class='container'>
+    <h1>{{this}}</h1>
+    <form id="updateBundle" class="form-inline">
+      <div class="form-group">
+        <label for="{{productType}}" class="sr-only">Jacket</label>
+        <select class="form-control" name="jacket" id="jacket">
+            <option id="jacket-unselected" name="jacket-unselected" class="form-control" value="">Choose Jacket</option>
+          {{#each jackets}}
+            {{> bundleProductOption}}
+          {{/each}}
+        </select>
+      </div>
+      <br />
+      <div class="form-group">
+        <select class="form-control" name="pants" id="pants">
+            <option id="pants-unselected" name="pants-unselected" class="form-control" value="">Choose Pants</option>
+          {{#each pants}}
+            <option id="pants-{{_id}}" name="pants-{{_id}}" class="form-control" value="{{_id}}">{{title}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <br />
+      <div class="form-group">
+        <label for="gloves" class="sr-only">Jacket</label>
+        <select class="form-control" name="gloves" id="gloves">
+            <option id="gloves-unselected" name="gloves-unselected" class="form-control" value="">Choose Gloves</option>
+          {{#each gloves}}
+            <option id="gloves-{{_id}}" name="gloves-{{_id}}" class="form-control" value="{{_id}}">{{title}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <br />
+      <div class="form-group">
+        <label for="goggles" class="sr-only">Goggles</label>
+        <select class="form-control" name="goggles" id="goggles">
+            <option id="goggles-unselected" name="goggles-unselected" class="form-control" value="">Choose Goggles</option>
+          {{#each goggles}}
+            <option id="goggles-{{_id}}" name="goggles-{{_id}}" class="form-control" value="{{_id}}">{{title}}</option>
+          {{/each}}
+        </select>
+      </div>
+      <button type="submit" class="btn btn-default">Save</button>
+    </form>
+  </div>
+
+</template>
+<template name='bundleProductOption'>
+    <option id="{{productType}}-{{_id}}" name="{{productType}}-{{_id}}" class="form-control" value="{{_id}}">{{title}}</option>
+</template>

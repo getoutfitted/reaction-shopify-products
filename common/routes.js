@@ -26,3 +26,9 @@ Router.route('dashboard/productBundles', {
   path: '/dashboard/productBundles',
   template: 'dashboardProductBundles'
 });
+
+Router.route('dashboard/productBundles/:id', {
+  controller: ProductBundlesAdminController,
+  path: '/dashboard/productBundles/:id',
+  template: 'dashboardBundleDetail'
+});
