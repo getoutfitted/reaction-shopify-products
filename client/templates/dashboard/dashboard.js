@@ -30,14 +30,14 @@ Template.dashboardShopifyProducts.events({
   },
   'submit #fetch-shopify-products-form': function (event) {
     event.preventDefault();
-    let update = false;
-    if (event.target.updateIfExists.value === 'true') {
-      update = true;
-    }
-    if (Session.get('importShopifyProducts/productType')) {
-      Meteor.call('importShopifyProducts/importProducts', update, Session.get('importShopifyProducts/productType'));
+    let update = event.target.updateIfExists.value === 'true' ? true : false;
+    let productType = event.target.productType.value || 'Jacket';
+    let importType = event.target.bundleOrProduct.value;
+
+    if (importType === 'bundle') {
+      Meteor.call('importShopifyProducts/importBundles');
     } else {
-      Meteor.call('importShopifyProducts/importProducts', update);
+      Meteor.call('importShopifyProducts/importProducts', update, productType);
     }
   }
 });

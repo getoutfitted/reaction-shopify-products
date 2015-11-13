@@ -49,6 +49,10 @@ function generateFakeLocation() {
   return _.sample(rooms) + '-S' + _.sample(shelves) + '-L' + _.sample(levels) + '-S' + _.sample(sections);
 }
 
+function updateImportStatus(status, product = {}) {
+  ReactionCore.Collections.ShopifyProducts.insert({status: status, currentProductId: product.id, currentProductTitle: product.title});
+}
+
 function setupProductDocument(product) {
   let prod = {}; // init empty object to hold new product.
   let colors = product.body_html.split(':color:')[1].split(',');
@@ -121,17 +125,39 @@ function setupProductDocument(product) {
       prod.variants.push(childVariant);
     });
   });
-  console.log(prod.shopifyId);
   return prod;
 }
 
 function setupBundleDocument(bundle) {
-  // let jacketSizes = product.body_html.split(':jacketsizes:')[1].split(','); // Array of jacket sizes - empty if no jacket.
-  // let pantSizes = product.body_html.split(':pantsizes:')[1].split(','); // Array of pants sizes - empty if no pants
-  // let gloveSizes = product.body_html.split(':glovesizes:')[1].split(','); // Array of glove sizes - empty if no gloves
-  // let goggleTypes = product.body_html.split(':goggletypes:')[1].split(','); // Array of goggle types - empty if no goggles or single type.
-  // let goggleStyle = product.body_html.split(':goggles:')[1]; // Goggle style - for packages - premium mirrored vs standard
-  // let gloves = product.body_html.split(':gloves:')[1]; // Glove style - for packages - premium goretex vs standard
+  let doc = {}; // init empty object to hold new product.
+  let colors = bundle.body_html.split(':color:')[1].split(',');
+  let midlayer = bundle.body_html.split(':midlayer:')[1].toLowerCase();
+  doc.shopId = ReactionCore.getShopId();
+  doc.shopifyId = bundle.id.toString();
+  doc.title = bundle.title;
+  doc.description = bundle.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
+  doc.hasMidlayer = midlayer.substr(0, 2) === 'no' ? false : true;
+  doc.colorWays = {};
+
+  // Create bundle Object;
+  _.each(colors, function (color) {
+    let colorWay = {};
+    if (doc.hasMidlayer) {
+      colorWay.midlayerId = '';
+      colorWay.midlayerColor = '';
+    }
+    colorWay.jacketId = '';
+    colorWay.jacketColor = '';
+    colorWay.pantsId = '';
+    colorWay.pantsColor = '';
+    colorWay.glovesId = '';
+    colorWay.glovesColor = '';
+    colorWay.gogglesId = '';
+    colorWay.gogglesColor = '';
+    doc.colorWays[color] = colorWay;
+  });
+
+  return doc;
 }
 
 Meteor.methods({
@@ -144,7 +170,6 @@ Meteor.methods({
       throw new Meteor.Error(403, 'Access Denied');
     }
 
-    const ShopifyProducts = ReactionCore.Collections.ShopifyProducts;
     const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
     const Products = ReactionCore.Collections.Products;
     const apikey = shopifyCredentials.key;
@@ -152,9 +177,8 @@ Meteor.methods({
     const domain = 'https://' + shopifyCredentials.shopname + '.myshopify.com';
     const query = '/admin/products.json';
     const fields = 'id,title,body_html,vendor,product_type,handle,tags';
-    let productExists = '';
 
-    ShopifyProducts.insert({createdAt: new Date, status: 'Fetching products...'});
+    updateImportStatus('Fetching products...');
 
     let res = HTTP.call('GET', domain + query, {
       params: {
@@ -167,39 +191,89 @@ Meteor.methods({
 
     products = res.data.products;
     _.each(products, function (product, index) {
-      let doc = {};
       if (product.product_type === 'Package') {
-        doc = setupBundleDocument(product);
-      } else {
-        doc = setupProductDocument(product);
+        let status = 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products because it was type "Package"...';
+        updateImportStatus(status, product);
+        return false;
       }
 
-      productExists = Products.findOne({shopifyId: doc.shopifyId});
+      // Check to see if this particular product has been imported before
+      let productExists = Products.findOne({shopifyId: product.id.toString()});
+      // If product exists and we aren't updating, skip it.
+      if (!!productExists && !updateIfExists) {
+        let status = 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products...';
+        updateImportStatus(status, product);
+        return false;
+      }
+
+      // Setup Reaction Product
+      let doc = setupProductDocument(product);
+
       ReactionCore.Log.info('Importing shopify product ' + doc.title);
       if (!productExists) {
+        let status = 'Imported product ' + (index + 1) + ' of ' + products.length + ' products...';
         Products.insert(doc);
-        ShopifyProducts.insert({
-          status: 'Imported product ' + (index + 1) + ' of ' + products.length + ' products...',
-          currentProductId: product.id,
-          currentProductTitle: product.title
-        });
-      } else if (updateIfExists) {
-        ShopifyProducts.insert({
-          status: 'Updated product ' + (index + 1) + ' of ' + products.length + ' products...',
-          currentProductId: product.id,
-          currentProductTitle: product.title
-        });
-      } else {
-        ShopifyProducts.insert({
-          status: 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products...',
-          currentProductId: product.id,
-          currentProductTitle: product.title
-        });
+        updateImportStatus(status, product);
+      }
+      // TODO: Build product updater.
+      let status = 'Would have updated product ' + (index + 1) + ' of ' + products.length + ' products...';
+      updateImportStatus(status, product);
+    });
+
+    updateImportStatus('Imported and/or updated ' + products.length + ' products.');
+  },
+
+  'importShopifyProducts/importBundles': function (updateIfExists = false, productType = 'Package', createdAtMin = '2015-09-01') {
+    check(updateIfExists, Boolean);
+    check(productType, String);
+    check(createdAtMin, String);
+
+    if (!ReactionCore.hasPermission('createProduct')) {
+      throw new Meteor.Error(403, 'Access Denied');
+    }
+
+    const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
+    const Bundles = ReactionCore.Collections.Bundles;
+    const apikey = shopifyCredentials.key;
+    const password = shopifyCredentials.password;
+    const domain = 'https://' + shopifyCredentials.shopname + '.myshopify.com';
+    const query = '/admin/products.json';
+    const fields = 'id,title,body_html,product_type';
+
+    updateImportStatus('Fetching bundles...');
+
+    let res = HTTP.call('GET', domain + query, {
+      params: {
+        fields: fields,
+        product_type: productType,
+        created_at_min: createdAtMin
+      },
+      auth: apikey + ':' + password
+    });
+
+    bundles = res.data.products;
+    _.each(bundles, function (bundle, index) {
+      if (bundle.product_type !== 'Package') {
+        return false;
+      }
+
+      let bundleExists = Bundles.findOne({shopifyId: bundle.id});
+      if (!!bundleExists) {
+        let status = 'Skipped bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
+        updateImportStatus(status, bundle);
+        return false;
+      }
+
+      let doc = setupBundleDocument(bundle);
+
+      ReactionCore.Log.info('Importing shopify bundle ' + doc.title);
+      if (!bundleExists) {
+        let status = 'Imported bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
+        Bundles.insert(doc);
+        updateImportStatus(status, bundle);
       }
     });
 
-    ShopifyProducts.insert({
-      status: 'Imported ' + products.length + ' products.'
-    });
+    updateImportStatus('Imported ' + bundles.length + ' bundles.');
   }
 });
