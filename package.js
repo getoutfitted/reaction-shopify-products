@@ -52,5 +52,5 @@ Package.onTest(function (api) {
   api.use('reactioncommerce:bootstrap-theme');
   api.use('getoutfitted:reaction-shopify-products');
 
-  api.addFiles('tests/jasmine/server/integration/methods.js', 'server');
+  // api.addFiles('tests/jasmine/server/integration/methods.js', 'server');
 });
