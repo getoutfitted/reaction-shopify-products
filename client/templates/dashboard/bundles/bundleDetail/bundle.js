@@ -23,10 +23,11 @@ Template.dashboardBundleSettings.onCreated(function () {
 });
 
 Template.dashboardBundleSettings.helpers({
-  jackets: function () {
+  productSelected: function (productType) {
     let bundle = ReactionCore.Collections.Bundles.findOne();
-    let type = 'jacket';
-    console.log('jacketId: ', bundle.colorWays[this][type + 'Id']);
+    return bundle.colorWays[this][productType + 'Id'];
+  },
+  jackets: function () {
     return Products.find({productType: 'Jacket'});
   },
   pants: function () {
@@ -41,13 +42,13 @@ Template.dashboardBundleSettings.helpers({
 });
 
 Template.dashboardBundleSettings.events({
-  'change .jacket': function (event) {
+  'change .updateBundleProduct': function (event) {
     let options = {};
     options.bundleColor = this.toString();
     let Bundles = ReactionCore.Collections.Bundles;
     options.bundleId = Bundles.findOne()._id;
     options.productId = event.target.value;
-    options.productType = 'jacket';
+    options.productType = event.currentTarget.name;
     Meteor.call('bundleProducts/updateBundleProduct', options);
   }
 });
@@ -57,8 +58,41 @@ Template.bundleProductOption.helpers({
     let bundle = ReactionCore.Collections.Bundles.findOne();
     let productType = type.toLowerCase();
     if (bundle.colorWays[Template.parentData()][productType + 'Id'] === typeId) {
-      return 'True';
+      return 'selected';
     }
-    return 'False';
+    return '';
+  }
+});
+
+Template.bundleProductColorSelect.onRendered(function () {
+  let instance = this;
+  instance.autorun(function () {
+    let bundle = ReactionCore.Collections.Bundles.findOne();
+    let color = instance.data.color;
+    let productType = instance.data.product.toLowerCase();
+
+    instance.data.productType = productType;
+    instance.subscribe('Product', bundle.colorWays[color][productType + 'Id']);
+    instance.data.productId = bundle.colorWays[color][productType + 'Id'];
+  });
+});
+
+Template.bundleProductColorSelect.helpers({
+  colors: function () {
+    let product = ReactionCore.Collections.Products.findOne(this.productId);
+    if (product) {
+      return product.colors;
+    }
+  }
+});
+
+Template.bundleProductColorSelect.events({
+  'change .updateBundleColor': function () {
+    let options = {};
+    options.bundleColor = this.color.toString();
+    options.bundleId = ReactionCore.Collections.Bundles.findOne()._id;
+    options.productColor = event.target.value;
+    options.productType = this.productType;
+    Meteor.call('bundleProducts/updateBundleProduct', options);
   }
 });

@@ -94,6 +94,7 @@ function setupProductDocument(product) {
   prod.hashtags = product.tags.split(',');
   prod.metafields = [];
   prod.isVisible = false;
+  prod.colors = [];
 
   _.each(features, function (feature) {
     let metafield = {};
@@ -105,6 +106,7 @@ function setupProductDocument(product) {
   prod.metafields.push({key: 'aboutVendor', value: aboutVendor});
 
   _.each(colors, function (color) {
+    prod.colors.push(color.trim());
     let variant = {};
     variant._id = Random.id();
     variant.type = 'variant';

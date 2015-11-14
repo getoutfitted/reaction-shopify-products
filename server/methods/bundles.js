@@ -19,6 +19,7 @@ Meteor.methods({
     }
 
     if (options.productId) {
+      // Can remove setting the _id after autoValue is fixed.
       return ReactionCore.Collections.Bundles.update({
         _id: options.bundleId
       }, {
