@@ -13,6 +13,12 @@ function stripTags(string) {
   return string.replace(/(<([^>]+)>)/ig, '');
 }
 
+function handelize(string) {
+  let handelizedString = string.replace(/([\W\/])/ig, '');
+  handelizedString = handelizedString[0].toLowerCase() + handelizedString.substr(1);
+  return handelizedString;
+}
+
 function letterSize(size) {
   let lowerCaseSize = size.toLowerCase().trim();
   if (letterSizeMap[lowerCaseSize]) {
@@ -161,7 +167,7 @@ function setupBundleDocument(bundle) {
     colorWay.glovesColor = '';
     colorWay.gogglesId = '';
     colorWay.gogglesColor = '';
-    doc.colorWays[color.trim()] = colorWay;
+    doc.colorWays[handelize(color)] = colorWay;
   });
 
   return doc;

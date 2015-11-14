@@ -43,7 +43,8 @@ Package.onUse(function (api) {
   api.addFiles([
     'server/publications.js',
     'server/security.js',
-    'server/methods/importProducts.js'
+    'server/methods/importProducts.js',
+    'server/methods/bundles.js'
   ], 'server');
 });
 

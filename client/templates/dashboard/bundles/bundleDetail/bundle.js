@@ -40,4 +40,25 @@ Template.dashboardBundleSettings.helpers({
   }
 });
 
-Template.dashboardBundleSettings.events({});
+Template.dashboardBundleSettings.events({
+  'change .jacket': function (event) {
+    let options = {};
+    options.bundleColor = this.toString();
+    let Bundles = ReactionCore.Collections.Bundles;
+    options.bundleId = Bundles.findOne()._id;
+    options.productId = event.target.value;
+    options.productType = 'jacket';
+    Meteor.call('bundleProducts/updateBundleProduct', options);
+  }
+});
+
+Template.bundleProductOption.helpers({
+  isSelectedProduct: function (type, typeId) {
+    let bundle = ReactionCore.Collections.Bundles.findOne();
+    let productType = type.toLowerCase();
+    if (bundle.colorWays[Template.parentData()][productType + 'Id'] === typeId) {
+      return 'True';
+    }
+    return 'False';
+  }
+});

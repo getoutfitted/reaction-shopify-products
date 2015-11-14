@@ -22,7 +22,7 @@
     <form id="updateBundle" class="form-inline">
       <div class="form-group">
         <label for="{{productType}}" class="sr-only">Jacket</label>
-        <select class="form-control" name="jacket" id="jacket">
+        <select class="form-control jacket" name="jacket" id="jacket">
             <option id="jacket-unselected" name="jacket-unselected" class="form-control" value="">Choose Jacket</option>
           {{#each jackets}}
             {{> bundleProductOption}}
@@ -64,5 +64,5 @@
 
 </template>
 <template name='bundleProductOption'>
-    <option id="{{productType}}-{{_id}}" name="{{productType}}-{{_id}}" class="form-control" value="{{_id}}">{{title}}</option>
+    <option id="{{productType}}-{{_id}}" name="{{productType}}-{{_id}}" class="form-control" value="{{_id}}">{{title}} - {{isSelectedProduct productType _id}}</option>
 </template>
