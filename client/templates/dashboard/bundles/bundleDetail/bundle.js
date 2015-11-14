@@ -96,3 +96,14 @@ Template.bundleProductColorSelect.events({
     Meteor.call('bundleProducts/updateBundleProduct', options);
   }
 });
+
+Template.bundleProductColorOption.helpers({
+  isSelectedColor: function (type, typeColor) {
+    let bundle = ReactionCore.Collections.Bundles.findOne();
+    let productType = type.toLowerCase();
+    if (bundle.colorWays[Template.parentData(2)][productType + 'Color'] === typeColor) {
+      return 'selected';
+    }
+    return '';
+  }
+});

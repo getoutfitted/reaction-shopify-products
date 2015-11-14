@@ -91,5 +91,5 @@
 </template>
 
 <template name='bundleProductColorOption'>
-  <option name="{{../productId}}-{{this}}" class="form-control" value="{{this}}">{{this}}</option>
+  <option name="{{../productId}}-{{this}}" class="form-control" value="{{this}}" {{isSelectedColor ../productType this}}>{{this}}</option>
 </template>
