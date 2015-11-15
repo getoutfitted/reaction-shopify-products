@@ -16,6 +16,7 @@ Package.onUse(function (api) {
   api.use('iron:router@1.0.12');
   api.use('momentjs:moment@2.10.6');
   api.use('momentjs:twix@0.7.2');
+  api.use('harrison:papa-parse@1.1.1');
   api.use('dburles:factory@0.3.10');
   api.use('getoutfitted:reaction-rental-products@0.1.0');
   api.use('reactioncommerce:reaction-factories');
