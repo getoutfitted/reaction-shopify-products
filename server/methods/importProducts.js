@@ -1,3 +1,5 @@
+/* eslint camelcase: [2, {properties: "never"}] */
+
 let letterSizeMap = {
   'extra small': 'XS',
   'small': 'S',
@@ -7,8 +9,18 @@ let letterSizeMap = {
   'extra extra large': 'XXL'
 };
 
+function stripTags(string) {
+  return string.replace(/(<([^>]+)>)/ig, '');
+}
+
+function handelize(string) {
+  let handelizedString = string.replace(/([\W\/])/ig, '');
+  handelizedString = handelizedString[0].toLowerCase() + handelizedString.substr(1);
+  return handelizedString;
+}
+
 function letterSize(size) {
-  let lowerCaseSize = size.toLowerCase();
+  let lowerCaseSize = size.toLowerCase().trim();
   if (letterSizeMap[lowerCaseSize]) {
     return letterSizeMap[lowerCaseSize];
   }
@@ -75,12 +87,14 @@ function setupProductDocument(product) {
   prod.pageTitle = pageTitle;
   prod.description = product.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
   prod.vendor = product.vendor;
-  prod.productType = determineProductType(product.product_type);
+  prod.type = determineProductType(product.product_type);
+  prod.productType = product.product_type;
   prod.handle = product.handle;
   prod.variants = [];
   prod.hashtags = product.tags.split(',');
   prod.metafields = [];
   prod.isVisible = false;
+  prod.colors = [];
 
   _.each(features, function (feature) {
     let metafield = {};
@@ -92,6 +106,7 @@ function setupProductDocument(product) {
   prod.metafields.push({key: 'aboutVendor', value: aboutVendor});
 
   _.each(colors, function (color) {
+    prod.colors.push(color.trim());
     let variant = {};
     variant._id = Random.id();
     variant.type = 'variant';
@@ -130,12 +145,12 @@ function setupProductDocument(product) {
 
 function setupBundleDocument(bundle) {
   let doc = {}; // init empty object to hold new product.
-  let colors = bundle.body_html.split(':color:')[1].split(',');
-  let midlayer = bundle.body_html.split(':midlayer:')[1].toLowerCase();
+  let colors = stripTags(bundle.body_html.split(':color:')[1]).split(',');
+  let midlayer = bundle.body_html.split(':midlayer:')[1].toLowerCase().trim();
   doc.shopId = ReactionCore.getShopId();
   doc.shopifyId = bundle.id.toString();
   doc.title = bundle.title;
-  doc.description = bundle.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
+  doc.description = stripTags(bundle.body_html.split(':description:')[0]).trim();
   doc.hasMidlayer = midlayer.substr(0, 2) === 'no' ? false : true;
   doc.colorWays = {};
 
@@ -154,7 +169,7 @@ function setupBundleDocument(bundle) {
     colorWay.glovesColor = '';
     colorWay.gogglesId = '';
     colorWay.gogglesColor = '';
-    doc.colorWays[color] = colorWay;
+    doc.colorWays[handelize(color)] = colorWay;
   });
 
   return doc;
@@ -223,7 +238,7 @@ Meteor.methods({
     updateImportStatus('Imported and/or updated ' + products.length + ' products.');
   },
 
-  'importShopifyProducts/importBundles': function (updateIfExists = false, productType = 'Package', createdAtMin = '2015-09-01') {
+  'importShopifyProducts/importBundles': function (updateIfExists = false, productType = 'Package', createdAtMin = '2015-08-26') {
     check(updateIfExists, Boolean);
     check(productType, String);
     check(createdAtMin, String);
