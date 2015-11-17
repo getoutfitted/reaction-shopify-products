@@ -7,6 +7,9 @@ Template.dashboardShopifyProducts.helpers({
     let shopifyProducts = ReactionCore.Collections.Packages.findOne({
       name: 'reaction-shopify-products'
     });
+    if (!shopifyProducts.settings) {
+      return false;
+    }
     if (shopifyProducts.settings.shopify.key && shopifyProducts.settings.shopify.password && shopifyProducts.settings.shopify.shopname) {
       return true;
     }
@@ -39,5 +42,14 @@ Template.dashboardShopifyProducts.events({
     } else {
       Meteor.call('importShopifyProducts/importProducts', update, productType);
     }
+  },
+  'submit #import-products-csv-form': function (event) {
+    event.preventDefault();
+    Papa.parse(event.target.csvImportProductsFile.files[0], {
+      header: true,
+      complete: function (results) {
+        Meteor.call('importCSVProducts/importProducts', results.data);
+      }
+    });
   }
 });

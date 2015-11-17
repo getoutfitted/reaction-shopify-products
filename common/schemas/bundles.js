@@ -9,7 +9,7 @@
 ReactionCore.Schemas.Bundles = new SimpleSchema({
   _id: {
     type: String,
-    autoValue: ReactionCore.schemaIdAutoValue,
+    autoValue: ImportProducts.schemaIdAutoValue,
     label: 'Bundle ID'
   },
   shopId: {

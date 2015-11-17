@@ -2,6 +2,7 @@
   <div class='container'>
     <p>Shopify Products helps ease the transistion to ReactionCommerce by enabling the import of existing Shopify products and turning them into ReactionCommerce products.</p>
     {{#if apiConfigured}}
+      <h2>Import products from Shopify</h2>
       <form id="fetch-shopify-products-form" class="form-inline">
         <p>Fetches products of type 'Jackets' by default. Otherwise enter a Shopify Product Type</p>
         <div class="form-group">
@@ -29,6 +30,14 @@
           {{> shopifyProductImportStatus}}
         {{/with}}
       {{/if}}
+      <br /><br />
+      <h2>Import products from CSV file</h2>
+      <form id="import-products-csv-form" class="form-inline">
+        <p>Import products from CSV file.</p>
+        <label for="csvImportProductsFile">CSV File</label>
+        <input type="file" accept=".csv" name="csvImportProductsFile" id="csvImportProductsFile" class="form-control" />
+        <button type="submit" class="btn btn-default form-control">Import CSV File</button>
+      </form>
     {{else}}
       <div class='row'>
       <h3>Configure your Shopify API Credentials</h3>
