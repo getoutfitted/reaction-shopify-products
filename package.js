@@ -1,7 +1,7 @@
 Package.describe({
   summary: 'Import products from existing Shopify store into ReactionCommerce',
   name: 'getoutfitted:reaction-shopify-products',
-  version: '0.1.0',
+  version: '0.1.1',
   git: 'https://github.com/getoutfitted/reaction-shopify-products'
 });
 
@@ -18,7 +18,7 @@ Package.onUse(function (api) {
   api.use('momentjs:twix@0.7.2');
   api.use('harrison:papa-parse@1.1.1');
   api.use('dburles:factory@0.3.10');
-  api.use('getoutfitted:reaction-rental-products@0.1.0');
+  api.use('getoutfitted:reaction-rental-products@0.1.1');
   api.use('reactioncommerce:reaction-factories');
 
   api.addFiles('common/schemas/packageConfig.js'); // Package Config
