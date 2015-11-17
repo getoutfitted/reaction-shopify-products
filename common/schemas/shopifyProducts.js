@@ -1,7 +1,7 @@
 ReactionCore.Schemas.ShopifyProducts = new SimpleSchema({
   _id: {
     type: String,
-    autoValue: ReactionCore.schemaIdAutoValue,
+    autoValue: ImportProducts.schemaIdAutoValue,
     index: 1,
     label: 'Product Import ID'
   },

@@ -21,33 +21,32 @@ Package.onUse(function (api) {
   api.use('getoutfitted:reaction-rental-products@0.1.0');
   api.use('reactioncommerce:reaction-factories');
 
+  api.addFiles('common/schemas/packageConfig.js'); // Package Config
   api.addFiles('server/register.js', 'server'); // Register as reaction package
 
-  api.addFiles([
-    'common/routes.js',
-    'common/schemas/packageConfig.js',
-    'common/schemas/shopifyProducts.js',
-    'common/schemas/bundles.js',
-    'common/collections.js'
-  ], ['client', 'server']);
+  api.addFiles('common/common.js'); // Register package wide common functions.
 
-  api.addFiles([
-    'client/templates/settings/settings.html',
-    'client/templates/settings/settings.js',
-    'client/templates/dashboard/dashboard.html',
-    'client/templates/dashboard/dashboard.js',
-    'client/templates/dashboard/bundles/bundles.html',
-    'client/templates/dashboard/bundles/bundles.js',
-    'client/templates/dashboard/bundles/bundleDetail/bundle.html',
-    'client/templates/dashboard/bundles/bundleDetail/bundle.js'
-  ], 'client');
+  // Schemas
+  api.addFiles('common/schemas/shopifyProducts.js');
+  api.addFiles('common/schemas/bundles.js');
+  api.addFiles('common/collections.js');
+  api.addFiles('server/publications.js', 'server');
+  api.addFiles('server/security.js', 'server');
 
-  api.addFiles([
-    'server/publications.js',
-    'server/security.js',
-    'server/methods/importProducts.js',
-    'server/methods/bundles.js'
-  ], 'server');
+  api.addFiles('server/methods/importProducts.js', 'server');
+  api.addFiles('server/methods/importCSVProducts.js', 'server');
+  api.addFiles('server/methods/bundles.js', 'server');
+
+  api.addFiles('common/routes.js');
+
+  api.addFiles('client/templates/settings/settings.html', 'client');
+  api.addFiles('client/templates/settings/settings.js', 'client');
+  api.addFiles('client/templates/dashboard/dashboard.html', 'client');
+  api.addFiles('client/templates/dashboard/dashboard.js', 'client');
+  api.addFiles('client/templates/dashboard/bundles/bundles.html', 'client');
+  api.addFiles('client/templates/dashboard/bundles/bundles.js', 'client');
+  api.addFiles('client/templates/dashboard/bundles/bundleDetail/bundle.html', 'client');
+  api.addFiles('client/templates/dashboard/bundles/bundleDetail/bundle.js', 'client');
 });
 
 Package.onTest(function (api) {
@@ -62,6 +61,4 @@ Package.onTest(function (api) {
   api.use('reactioncommerce:core@0.9.4');
   api.use('reactioncommerce:bootstrap-theme');
   api.use('getoutfitted:reaction-shopify-products');
-
-  // api.addFiles('tests/jasmine/server/integration/methods.js', 'server');
 });

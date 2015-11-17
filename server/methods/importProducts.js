@@ -1,57 +1,8 @@
 /* eslint camelcase: [2, {properties: "never"}] */
 
-let letterSizeMap = {
-  'extra small': 'XS',
-  'small': 'S',
-  'medium': 'M',
-  'large': 'L',
-  'extra large': 'XL',
-  'extra extra large': 'XXL'
+ImportProducts.updateImportStatus = function (status, product = {}) {
+  ReactionCore.Collections.ShopifyProducts.insert({status: status, currentProductId: product.id, currentProductTitle: product.title});
 };
-
-function stripTags(string) {
-  return string.replace(/(<([^>]+)>)/ig, '');
-}
-
-function handelize(string) {
-  let handelizedString = string.replace(/([\W\/])/ig, '');
-  handelizedString = handelizedString[0].toLowerCase() + handelizedString.substr(1);
-  return handelizedString;
-}
-
-function letterSize(size) {
-  let lowerCaseSize = size.toLowerCase().trim();
-  if (letterSizeMap[lowerCaseSize]) {
-    return letterSizeMap[lowerCaseSize];
-  }
-  // if we don't find a match - return size as is
-  return size;
-}
-
-function determineProductType(productType) {
-  if (productType === 'Socks'
-  || productType === 'Baselayer Top'
-  || productType === 'Baselayer Bottom') {
-    return 'simple';
-  }
-  return 'rental';
-}
-
-function generateSku(product, color, size) {
-  const prodSection = product.vendor.substr(0, 2).toUpperCase() + product.title.substr(0, 2).toUpperCase();
-  const colorWords = color.match(/[A-Za-z\d]\w+/g);
-  let colorSection = '';
-  if (colorWords.length > 1) {
-    _.each(colorWords, function (word) {
-      colorSection = colorSection + word[0];
-    });
-  } else {
-    colorSection = colorWords[0].substr(0, 2).toUpperCase();
-  }
-
-  const sku = prodSection + '-' + colorSection + '-' + letterSize(size);
-  return sku;
-}
 
 function generateFakeLocation() {
   const rooms = ['BGT', 'MJP', 'WJP', 'GLV', 'GOG', 'BAS'];
@@ -59,10 +10,6 @@ function generateFakeLocation() {
   const levels = [1, 2, 3, 4];
   const sections = [1, 2, 3, 4, 5, 6, 7];
   return _.sample(rooms) + '-S' + _.sample(shelves) + '-L' + _.sample(levels) + '-S' + _.sample(sections);
-}
-
-function updateImportStatus(status, product = {}) {
-  ReactionCore.Collections.ShopifyProducts.insert({status: status, currentProductId: product.id, currentProductTitle: product.title});
 }
 
 function setupProductDocument(product) {
@@ -87,7 +34,7 @@ function setupProductDocument(product) {
   prod.pageTitle = pageTitle;
   prod.description = product.body_html.split(':description:')[0].replace(/(<([^>]+)>)/ig, '');
   prod.vendor = product.vendor;
-  prod.type = determineProductType(product.product_type);
+  prod.type = ImportProducts.determineProductType(product.product_type);
   prod.productType = product.product_type;
   prod.handle = product.handle;
   prod.variants = [];
@@ -124,11 +71,12 @@ function setupProductDocument(product) {
       childVariant._id = Random.id();
       childVariant.parentId = variant._id;
       // XXX consider removing generateSku once we have real data;
-      childVariant.sku = generateSku(product, color, size);
+      childVariant.sku = ImportProducts.generateSku(product, color, size);
       // XXX Remove generate fake location once we have real data;
       childVariant.location = generateFakeLocation();
       childVariant.color = color.trim();
       childVariant.size = size.trim();
+      childVariant.alternateSize = ImportProducts.isAlphaSizing(size) ? '-' : size.trim();
       childVariant.title = 'size';
       childVariant.optionTitle = size.trim();
       childVariant.inventoryQuantity = 1;
@@ -145,12 +93,12 @@ function setupProductDocument(product) {
 
 function setupBundleDocument(bundle) {
   let doc = {}; // init empty object to hold new product.
-  let colors = stripTags(bundle.body_html.split(':color:')[1]).split(',');
+  let colors = ImportProducts.stripTags(bundle.body_html.split(':color:')[1]).split(',');
   let midlayer = bundle.body_html.split(':midlayer:')[1].toLowerCase().trim();
   doc.shopId = ReactionCore.getShopId();
   doc.shopifyId = bundle.id.toString();
   doc.title = bundle.title;
-  doc.description = stripTags(bundle.body_html.split(':description:')[0]).trim();
+  doc.description = ImportProducts.stripTags(bundle.body_html.split(':description:')[0]).trim();
   doc.hasMidlayer = midlayer.substr(0, 2) === 'no' ? false : true;
   doc.colorWays = {};
 
@@ -169,7 +117,7 @@ function setupBundleDocument(bundle) {
     colorWay.glovesColor = '';
     colorWay.gogglesId = '';
     colorWay.gogglesColor = '';
-    doc.colorWays[handelize(color)] = colorWay;
+    doc.colorWays[ImportProducts.keyify(color)] = colorWay;
   });
 
   return doc;
@@ -193,7 +141,7 @@ Meteor.methods({
     const query = '/admin/products.json';
     const fields = 'id,title,body_html,vendor,product_type,handle,tags';
 
-    updateImportStatus('Fetching products...');
+    ImportProducts.updateImportStatus('Fetching products...');
 
     let res = HTTP.call('GET', domain + query, {
       params: {
@@ -208,7 +156,7 @@ Meteor.methods({
     _.each(products, function (product, index) {
       if (product.product_type === 'Package') {
         let status = 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products because it was type "Package"...';
-        updateImportStatus(status, product);
+        ImportProducts.updateImportStatus(status, product);
         return false;
       }
 
@@ -217,7 +165,7 @@ Meteor.methods({
       // If product exists and we aren't updating, skip it.
       if (!!productExists && !updateIfExists) {
         let status = 'Skipped product ' + (index + 1) + ' of ' + products.length + ' products...';
-        updateImportStatus(status, product);
+        ImportProducts.updateImportStatus(status, product);
         return false;
       }
 
@@ -228,14 +176,14 @@ Meteor.methods({
       if (!productExists) {
         let status = 'Imported product ' + (index + 1) + ' of ' + products.length + ' products...';
         Products.insert(doc);
-        updateImportStatus(status, product);
+        ImportProducts.updateImportStatus(status, product);
       }
       // TODO: Build product updater.
       let status = 'Would have updated product ' + (index + 1) + ' of ' + products.length + ' products...';
-      updateImportStatus(status, product);
+      ImportProducts.updateImportStatus(status, product);
     });
 
-    updateImportStatus('Imported and/or updated ' + products.length + ' products.');
+    ImportProducts.updateImportStatus('Imported and/or updated ' + products.length + ' products.');
   },
 
   'importShopifyProducts/importBundles': function (updateIfExists = false, productType = 'Package', createdAtMin = '2015-08-26') {
@@ -255,7 +203,7 @@ Meteor.methods({
     const query = '/admin/products.json';
     const fields = 'id,title,body_html,product_type';
 
-    updateImportStatus('Fetching bundles...');
+    ImportProducts.updateImportStatus('Fetching bundles...');
 
     let res = HTTP.call('GET', domain + query, {
       params: {
@@ -275,7 +223,7 @@ Meteor.methods({
       let bundleExists = Bundles.findOne({shopifyId: bundle.id});
       if (!!bundleExists) {
         let status = 'Skipped bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
-        updateImportStatus(status, bundle);
+        ImportProducts.updateImportStatus(status, bundle);
         return false;
       }
 
@@ -285,10 +233,10 @@ Meteor.methods({
       if (!bundleExists) {
         let status = 'Imported bundle ' + (index + 1) + ' of ' + bundles.length + ' bundles...';
         Bundles.insert(doc);
-        updateImportStatus(status, bundle);
+        ImportProducts.updateImportStatus(status, bundle);
       }
     });
 
-    updateImportStatus('Imported ' + bundles.length + ' bundles.');
+    ImportProducts.updateImportStatus('Imported ' + bundles.length + ' bundles.');
   }
 });
