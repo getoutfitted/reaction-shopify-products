@@ -1,5 +1,5 @@
 Template.dashboardBundleDetail.onCreated(function () {
-  this.subscribe('ShopifyProducts/Bundle', Router.current().params.id);
+  this.subscribe('ShopifyProducts/Bundle', Router.current().params._id);
 });
 
 Template.dashboardBundleDetail.helpers({

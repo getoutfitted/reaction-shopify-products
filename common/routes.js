@@ -21,14 +21,16 @@ ProductBundlesAdminController = ShopAdminController.extend({
   }
 });
 
-Router.route('dashboard/productBundles', {
+Router.route('dashboard/product-bundles', {
+  name: 'product-bundles',
   controller: ProductBundlesAdminController,
-  path: '/dashboard/productBundles',
+  path: '/dashboard/product-bundles',
   template: 'dashboardProductBundles'
 });
 
-Router.route('dashboard/productBundles/:id', {
+Router.route('dashboard/product-bundles/:_id', {
+  name: 'product-bundle',
   controller: ProductBundlesAdminController,
-  path: '/dashboard/productBundles/:id',
+  path: '/dashboard/product-bundles/:_id',
   template: 'dashboardBundleDetail'
 });
