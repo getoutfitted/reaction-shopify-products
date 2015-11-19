@@ -9,14 +9,14 @@ function setupCSVProductDocument(product, skus) {
   prod.variants = [];
   prod.colors = [];
   prod.shopId = ReactionCore.getShopId();
-  prod.shopifyId = product.shopifyId.trim();
-  prod.vendor = product.vendor.trim();
-  prod.gender = product.gender.trim();
-  prod.title = product.title.trim();
-  prod.pageTitle = product.title.trim();
-  prod.productType = product.productType.trim();
-  prod.description = product.title.trim();
-  prod.handle = ImportProducts.handleize(product.gender.trim() + ' ' + product.title.trim());
+  prod.shopifyId = product.shopifyId ? product.shopifyId.trim() : '';
+  prod.vendor = product.vendor ? product.vendor.trim() : '';
+  prod.gender = product.gender ? product.gender.trim() : '';
+  prod.title = product.title ? product.title.trim() : '';
+  prod.pageTitle = prod.title;
+  prod.productType = product.productType ? product.productType.trim() : '';
+  prod.description = prod.title;
+  prod.handle = ImportProducts.handleize(prod.gender + ' ' + prod.title);
   prod.isVisible = false;
 
   // Build Sizes object
@@ -64,6 +64,8 @@ function setupCSVProductDocument(product, skus) {
 
     _.each(childVariants, function (child) {
       let childVariant = {};
+      ReactionCore.Log.info('---------------' + prod.title + ' ' + child.color.trim() + ' ' + child.size.trim() + '---------------');
+      ReactionCore.Log.info('-------------------------------------------------------------------------');
       childVariant._id = Random.id();
       childVariant.parentId = variant._id;
       childVariant.type = 'variant';
@@ -85,17 +87,20 @@ function setupCSVProductDocument(product, skus) {
       // update parent inv qty
       variant.inventoryQuantity = variant.inventoryQuantity + parseInt(child.qty.trim(), 10);
 
+      let qty = parseInt(child.qty.trim(), 10);
       // setup inventory variants
-      _(parseInt(child.qty.trim(), 10)).times(function (n) {
+      _(qty).times(function (n) {
+        if (n % 5 === 0) {
+          ReactionCore.Log.info('Inventory number ' + n + ' of ' + qty);
+        }
         let inventoryVariant = {};
-        inventoryVariant._id = Random.id();
         inventoryVariant.parentId = childVariant._id;
-        inventoryVariant.type = 'inventory';
+        inventoryVariant.shopId = prod.shopId;
         inventoryVariant.barcode = childVariant.sku + '-' + ImportProducts.paddedNumber(n);
         inventoryVariant.sku = childVariant.sku;
         inventoryVariant.color = childVariant.color;
         inventoryVariant.size = childVariant.size;
-        prod.variants.push(inventoryVariant);
+        ReactionCore.Collections.InventoryVariants.insert(inventoryVariant);
       });
     });
   });
@@ -133,5 +138,9 @@ Meteor.methods({
       }
       index = index + 1;
     });
+    ReactionCore.Log.info('-------------------------------------------------------------------------');
+    ReactionCore.Log.info('-------------------------Done Importing Products-------------------------');
+    ReactionCore.Log.info('-------------------------------------------------------------------------');
+    ImportProducts.updateImportStatus('Done importing CSV products');
   }
 });
