@@ -22,9 +22,12 @@
 <template name="dashboardProductBundle">
   {{! context is bundles }}
   <tr style="border-top:2px solid #666;">
-    <th scope="row">{{title}}</th>
+    <a href="{{pathFor 'product-bundle'}}">
+      <th scope="row">{{title}}</th>
+    </a>
     <th>{{hasMidlayer}}</th>
     <td>{{colorWaysCount colorWays}}</td>
+
   </tr>
   {{#each colorWaysKeys colorWays}}
     <tr>
