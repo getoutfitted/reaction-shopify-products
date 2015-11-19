@@ -66,11 +66,14 @@ Meteor.publish('ProductsOfType', function (type) {
   let Products = ReactionCore.Collections.Products;
   return Products.find(selector, {
     sort: {
-      title: 1
+      gender: 1,
+      vendor: 1
     },
     limit: 30,
     fields: {
       _id: 1,
+      vendor: 1,
+      gender: 1,
       title: 1,
       productType: 1
     }
