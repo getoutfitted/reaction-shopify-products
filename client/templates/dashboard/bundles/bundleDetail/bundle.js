@@ -17,18 +17,27 @@ Template.dashboardBundleSettings.inheritsHelpersFrom('dashboardBundleDetail');
 
 Template.dashboardBundleSettings.onCreated(function () {
   this.subscribe('ProductsOfType', 'Jacket');
+  this.subscribe('ProductsOfType', 'Midlayer');
   this.subscribe('ProductsOfType', 'Pants');
   this.subscribe('ProductsOfType', 'Goggles');
   this.subscribe('ProductsOfType', 'Gloves');
 });
 
 Template.dashboardBundleSettings.helpers({
+  // TODO: Bundles should have gender
   productSelected: function (productType) {
     let bundle = ReactionCore.Collections.Bundles.findOne();
     return bundle.colorWays[this][productType + 'Id'];
   },
+  hasMidlayer: function () {
+    let bundle = ReactionCore.Collections.Bundles.findOne();
+    return bundle.hasMidlayer;
+  },
   jackets: function () {
     return Products.find({productType: 'Jacket'});
+  },
+  midlayers: function () {
+    return Products.find({productType: 'Midlayer'});
   },
   pants: function () {
     return Products.find({productType: 'Pants'});
@@ -37,6 +46,12 @@ Template.dashboardBundleSettings.helpers({
     return Products.find({productType: 'Gloves'});
   },
   goggles: function () {
+    return Products.find({productType: 'Goggles'});
+  },
+  stdGoggles: function () {
+    return Products.find({productType: 'Goggles'});
+  },
+  otgGoggles: function () {
     return Products.find({productType: 'Goggles'});
   }
 });
@@ -55,9 +70,11 @@ Template.dashboardBundleSettings.events({
 
 Template.bundleProductOption.helpers({
   isSelectedProduct: function (type, typeId) {
-    let bundle = ReactionCore.Collections.Bundles.findOne();
-    let productType = type.toLowerCase();
-    if (bundle.colorWays[Template.parentData()][productType + 'Id'] === typeId) {
+    const productType = this.product;
+    const parentContext = Template.parentData(2);
+    const bundle = ReactionCore.Collections.Bundles.findOne();
+
+    if (bundle.colorWays[parentContext][productType + 'Id'] === typeId) {
       return 'selected';
     }
     return '';
@@ -69,10 +86,10 @@ Template.bundleProductColorSelect.onRendered(function () {
   instance.autorun(function () {
     let bundle = ReactionCore.Collections.Bundles.findOne();
     let color = instance.data.color;
-    let productType = instance.data.product.toLowerCase();
+    let productType = instance.data.product[0].toLowerCase() + instance.data.product.substr(1);
 
     instance.data.productType = productType;
-    instance.subscribe('Product', bundle.colorWays[color][productType + 'Id']);
+    instance.subscribe('Product', bundle.colorWays[color][productType + 'Id'] || '');
     instance.data.productId = bundle.colorWays[color][productType + 'Id'];
   });
 });
@@ -100,7 +117,7 @@ Template.bundleProductColorSelect.events({
 Template.bundleProductColorOption.helpers({
   isSelectedColor: function (type, typeColor) {
     let bundle = ReactionCore.Collections.Bundles.findOne();
-    let productType = type.toLowerCase();
+    let productType = type[0].toLowerCase() + type.substr(1);
     if (bundle.colorWays[Template.parentData(2)][productType + 'Color'] === typeColor) {
       return 'selected';
     }

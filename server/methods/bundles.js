@@ -7,7 +7,6 @@ Meteor.methods({
     check(options.productId, Match.Optional(String));
     check(options.productColor, Match.Optional(String));
 
-    console.log(options);
     if (!ReactionCore.hasPermission('createProduct')) {
       throw new Meteor.Error(403, 'Access Denied');
     }
@@ -17,7 +16,6 @@ Meteor.methods({
     } else if (options.productColor) {
       productTypeSelector = options.productType + 'Color';
     }
-
     if (options.productId) {
       // Can remove setting the _id after autoValue is fixed.
       return ReactionCore.Collections.Bundles.update({

@@ -115,8 +115,10 @@ function setupBundleDocument(bundle) {
     colorWay.pantsColor = '';
     colorWay.glovesId = '';
     colorWay.glovesColor = '';
-    colorWay.gogglesId = '';
-    colorWay.gogglesColor = '';
+    colorWay.stdGogglesId = '';
+    colorWay.stdGogglesColor = '';
+    colorWay.otgGogglesId = '';
+    colorWay.otgGogglesColor = '';
     doc.colorWays[ImportProducts.keyify(color)] = colorWay;
   });
 
