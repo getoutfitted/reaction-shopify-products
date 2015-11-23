@@ -16,7 +16,6 @@ Meteor.methods({
     } else if (options.productColor) {
       productTypeSelector = options.productType + 'Color';
     }
-    console.log(options);
     if (options.productId) {
       // Can remove setting the _id after autoValue is fixed.
       return ReactionCore.Collections.Bundles.update({
