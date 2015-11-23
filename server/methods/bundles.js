@@ -7,7 +7,6 @@ Meteor.methods({
     check(options.productId, Match.Optional(String));
     check(options.productColor, Match.Optional(String));
 
-    console.log(options);
     if (!ReactionCore.hasPermission('createProduct')) {
       throw new Meteor.Error(403, 'Access Denied');
     }

@@ -23,6 +23,7 @@ Template.dashboardBundleSettings.onCreated(function () {
 });
 
 Template.dashboardBundleSettings.helpers({
+  // TODO: Bundles should have gender
   productSelected: function (productType) {
     let bundle = ReactionCore.Collections.Bundles.findOne();
     return bundle.colorWays[this][productType + 'Id'];
