@@ -41,3 +41,4 @@ Meteor.methods({
     throw new Meteor.Error('Tried Updateding bundle without product Id or Color');
   }
 });
+
