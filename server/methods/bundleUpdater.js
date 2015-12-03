@@ -472,16 +472,29 @@ let bundleTitle = {
     }
   }
 };
-
-function bundleUpdater() {
-  let bundleTitles = _.map(Bundles.find().fetch(), function (b) {
-    return  b.title;
-  });
-  _.each(bundleTitles, function (title) {
-    Bundles.update({title: title }, {
-      $set: {
-        colorWays: bundleTitle[title].colorWays
-      }
+Meteor.methods({
+  bundleUpdater: function () {
+    let bundleTitles = _.map(Bundles.find().fetch(), function (b) {
+      return  b.title;
     });
-  });
-}
+    _.each(bundleTitles, function (title) {
+      Bundles.update({title: title }, {
+        $set: {
+          colorWays: bundleTitle[title].colorWays
+        }
+      });
+    });
+  }
+});
+// function bundleUpdater() {
+//   let bundleTitles = _.map(Bundles.find().fetch(), function (b) {
+//     return  b.title;
+//   });
+//   _.each(bundleTitles, function (title) {
+//     Bundles.update({title: title }, {
+//       $set: {
+//         colorWays: bundleTitle[title].colorWays
+//       }
+//     });
+//   });
+// }
