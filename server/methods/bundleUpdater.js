@@ -105,7 +105,7 @@ Meteor.methods({
             glovesId: findProduct('mens-profile-glove'),
             glovesColor: 'True Black',
             stdGogglesId: findProduct('mens-vice'),
-            stdGogglesColor: 'Black',
+            stdGogglesColor: 'Corsair',
             otgGogglesId: findProduct('mens-knowledge---otg'),
             otgGogglesColor: 'Black' }
         }
@@ -114,17 +114,17 @@ Meteor.methods({
         colorWays: {
           classicRedAshTan:
            { midlayerId: findProduct('mens-nano-air'),
-             midlayerColor: 'French Red',
+             midlayerColor: 'Black',
              jacketId: findProduct('mens-snowshot-jacket'),
              jacketColor: 'Classic Red',
              pantsId: findProduct('mens-snowshot-pant'),
              pantsColor: 'Ash Tan',
              glovesId: findProduct('mens-gore-glove'),
              glovesColor: 'True Black',
-             stdGogglesId: findProduct('mens-forecast'),
-             stdGogglesColor: 'Dark Knight',
+             stdGogglesId: findProduct('mens-slate'),
+             stdGogglesColor: 'Upland White',
              otgGogglesId: findProduct('mens-slate'),
-             otgGogglesColor: 'Dark Knight' },
+             otgGogglesColor: 'Upland White' },
           underwaterBlueBlack:
            { midlayerId: findProduct('mens-nano-air'),
              midlayerColor: 'Black',
@@ -134,23 +134,23 @@ Meteor.methods({
              pantsColor: 'Black',
              glovesId: findProduct('mens-gore-glove'),
              glovesColor: 'True Black',
-             stdGogglesId: findProduct('mens-forecast'),
-             stdGogglesColor: 'Stone Grey',
+             stdGogglesId: findProduct('mens-slate'),
+             stdGogglesColor: 'Upland Grass',
              otgGogglesId: findProduct('mens-slate'),
-             otgGogglesColor: 'Dark Knight' },
+             otgGogglesColor: 'Upland Grass' },
           blackBlack:
            { midlayerId: findProduct('mens-nano-air'),
-             midlayerColor: 'Black',
+             midlayerColor: 'Classic Red',
              jacketId: findProduct('mens-snowshot-jacket'),
              jacketColor: 'Black',
              pantsId: findProduct('mens-snowshot-pant'),
              pantsColor: 'Black',
              glovesId: findProduct('mens-gore-glove'),
              glovesColor: 'True Black',
-             stdGogglesId: findProduct('mens-forecast'),
-             stdGogglesColor: 'Dark Knight',
+             stdGogglesId: findProduct('mens-slate'),
+             stdGogglesColor: 'Upland Grass',
              otgGogglesId: findProduct('mens-slate'),
-             otgGogglesColor: 'Dark Knight' }
+             otgGogglesColor: 'Upland Grass' }
         }
       },
       'Men\'s Sport Outfit': {
@@ -190,8 +190,8 @@ Meteor.methods({
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-fargo'),
              stdGogglesColor: 'Dark Knight',
-             otgGogglesId: findProduct('womens-slate'),
-             otgGogglesColor: 'Upland White' }
+             otgGogglesId: findProduct('womens-fargo'),
+             otgGogglesColor: 'Dark Knight' }
         }
       },
       'Women\'s Patagonia Outfit': {
@@ -203,12 +203,12 @@ Meteor.methods({
              jacketColor: 'Aqua Stone',
              pantsId: findProduct('womens-insulated-snowbelle-pants'),
              pantsColor: 'Black',
-             glovesId: findProduct('womens-profile-glove'),
+             glovesId: findProduct('womens-gore-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-fargo'),
              stdGogglesColor: 'Blue Crush',
-             otgGogglesId: findProduct('womens-slate'),
-             otgGogglesColor: 'Upland White' },
+             otgGogglesId: findProduct('womens-fargo'),
+             otgGogglesColor: 'Blue Crush' },
           navyBlueUnderwaterBlue:
            { midlayerId: findProduct('womens-nano-air'),
              midlayerColor: 'Black',
@@ -216,12 +216,12 @@ Meteor.methods({
              jacketColor: 'Navy Blue',
              pantsId: findProduct('womens-insulated-snowbelle-pants'),
              pantsColor: 'Underwater Blue',
-             glovesId: findProduct('womens-profile-glove'),
+             glovesId: findProduct('womens-gore-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-fargo'),
-             stdGogglesColor: 'Dark Knight',
-             otgGogglesId: findProduct('womens-slate'),
-             otgGogglesColor: 'Upland White' },
+             stdGogglesColor: 'Blue Crush',
+             otgGogglesId: findProduct('womens-fargo'),
+             otgGogglesColor: 'Blue Crush' },
           blackBlack:
            { midlayerId: findProduct('womens-nano-air'),
              midlayerColor: 'Black',
@@ -229,12 +229,12 @@ Meteor.methods({
              jacketColor: 'Black',
              pantsId: findProduct('womens-insulated-snowbelle-pants'),
              pantsColor: 'Black',
-             glovesId: findProduct('womens-profile-glove'),
+             glovesId: findProduct('womens-gore-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-fargo'),
              stdGogglesColor: 'Dark Knight',
-             otgGogglesId: findProduct('womens-slate'),
-             otgGogglesColor: 'Upland White' }
+             otgGogglesId: findProduct('womens-fargo'),
+             otgGogglesColor: 'Dark Knight' }
         }
       },
       'Women\'s Roxy Outfit': {
@@ -256,7 +256,7 @@ Meteor.methods({
         colorWays: {
           azaleaElectricBlue:
            { jacketId: findProduct('girls-youth-mckenzie-lizzie'),
-             jacketColor: 'Azailia',
+             jacketColor: 'Azalea',
              pantsId: findProduct('youth-marvelous'),
              pantsColor: 'Electric Blue',
              glovesId: findProduct('youth-toddler-adrenaline-mitt'),
@@ -277,9 +277,9 @@ Meteor.methods({
              glovesId: findProduct('youth-toddler-adrenaline-mitt'),
              glovesColor: 'Black',
              stdGogglesId: findProduct('youth-sidekick'),
-             stdGogglesColor: 'Colbalt',
+             stdGogglesColor: 'Cobalt',
              otgGogglesId: findProduct('youth-sidekick'),
-             otgGogglesColor: 'Colbalt' },
+             otgGogglesColor: 'Cobalt' },
           cloverBlack:
            { jacketId: findProduct('boys-youth-damien'),
              jacketColor: 'Clover',
@@ -288,9 +288,9 @@ Meteor.methods({
              glovesId: findProduct('youth-toddler-adrenaline-mitt'),
              glovesColor: 'Black',
              stdGogglesId: findProduct('youth-sidekick'),
-             stdGogglesColor: 'Colbalt',
+             stdGogglesColor: 'Cobalt',
              otgGogglesId: findProduct('youth-sidekick'),
-             otgGogglesColor: 'Colbalt' }
+             otgGogglesColor: 'Cobalt' }
         }
       },
       'Women\'s Sport Outfit': {
@@ -303,7 +303,7 @@ Meteor.methods({
              glovesId: findProduct('womens-profile-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-transit'),
-             stdGogglesColor: 'White',
+             stdGogglesColor: 'Black',
              otgGogglesId: findProduct('womens-showcase---otg'),
              otgGogglesColor: 'White' },
           bluebirdBlack:
@@ -336,7 +336,7 @@ Meteor.methods({
              glovesId: findProduct('womens-profile-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-transit'),
-             stdGogglesColor: 'White',
+             stdGogglesColor: 'Black',
              otgGogglesId: findProduct('womens-showcase---otg'),
              otgGogglesColor: 'White' }
         }
@@ -357,18 +357,18 @@ Meteor.methods({
           trueBlackTrueBlack:
            { jacketId: findProduct('womens-charlie-jacket'),
              jacketColor: 'True Black',
-             pantsId: findProduct('womens-summit-pant'),
+             pantsId: findProduct('womens-gloria-pant'),
              pantsColor: 'True Black',
              glovesId: findProduct('womens-profile-glove'),
              glovesColor: 'True Black',
              stdGogglesId: findProduct('womens-transit'),
-             stdGogglesColor: 'White',
+             stdGogglesColor: 'Black',
              otgGogglesId: findProduct('womens-showcase---otg'),
              otgGogglesColor: 'White' },
           diamondTrueBlack:
            { jacketId: findProduct('womens-rubix-jacket'),
              jacketColor: 'Diamond',
-             pantsId: findProduct('womens-summit-pant'),
+             pantsId: findProduct('womens-gloria-pant'),
              pantsColor: 'True Black',
              glovesId: findProduct('womens-profile-glove'),
              glovesColor: 'True Black',
@@ -379,7 +379,7 @@ Meteor.methods({
           pixelFloralTrueBlack:
            { jacketId: findProduct('womens-radar-jacket'),
              jacketColor: 'Plx Flr / GRPS / Tropic',
-             pantsId: findProduct('womens-summit-pant'),
+             pantsId: findProduct('womens-gloria-pant'),
              pantsColor: 'True Black',
              glovesId: findProduct('womens-profile-glove'),
              glovesColor: 'True Black',
@@ -398,8 +398,8 @@ Meteor.methods({
              pantsColor: 'Anthracite',
              glovesId: findProduct('mens-profile-glove'),
              glovesColor: 'True Black',
-             stdGogglesId: findProduct('mens-scope'),
-             stdGogglesColor: 'Charcoal',
+             stdGogglesId: findProduct('mens-vice'),
+             stdGogglesColor: 'Black',
              otgGogglesId: findProduct('mens-knowledge---otg'),
              otgGogglesColor: 'Black' },
           syrahBlack:
@@ -409,8 +409,8 @@ Meteor.methods({
              pantsColor: 'Anthracite',
              glovesId: findProduct('mens-profile-glove'),
              glovesColor: 'True Black',
-             stdGogglesId: findProduct('mens-scope'),
-             stdGogglesColor: 'Charcoal',
+             stdGogglesId: findProduct('mens-vice'),
+             stdGogglesColor: 'Black',
              otgGogglesId: findProduct('mens-knowledge---otg'),
              otgGogglesColor: 'Black' }
         }
