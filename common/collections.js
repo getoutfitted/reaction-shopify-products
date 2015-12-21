@@ -1,23 +1,5 @@
-ReactionCore.Schemas.ShopifyProductsPackageConfig = new SimpleSchema([
-  ReactionCore.Schemas.PackageConfig, {
-    'settings.shopify.shopname': {
-      type: String,
-      label: 'Shopify Shop Name',
-      optional: true
-    },
-    'settings.shopify.key': {
-      type: String,
-      label: 'Shopify API KEY',
-      optional: true
-    },
-    'settings.shopify.password': {
-      type: String,
-      label: 'Shopify API Password',
-      optional: true
-    },
-    'settings.shopify.lastUpdatedTime': {
-      type: Date,
-      label: 'Last time the product data was updated'
-    }
-  }
-]);
+ReactionCore.Collections.Bundles = Bundles = this.Bundles = new Mongo.Collection('Bundles');
+ReactionCore.Collections.ShopifyProducts = ShopifyProducts = this.ShopifyProducts = new Mongo.Collection('ShopifyProducts');
+
+ReactionCore.Collections.Bundles.attachSchema(ReactionCore.Schemas.Bundles);
+ReactionCore.Collections.ShopifyProducts.attachSchema(ReactionCore.Schemas.ShopifyProducts);
