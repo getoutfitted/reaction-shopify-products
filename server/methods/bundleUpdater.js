@@ -5,12 +5,7 @@ function findProduct(handle) {
   }
   ReactionCore.Log.warn('missing is the: ' + handle);
 }
-function hf(_id) {
-  return Products.findOne(_id).handle;
-}
-function bf(title) {
-  return Bundles.findOne({title: title}).colorWays;
-}
+
 Meteor.methods({
   bundleUpdater: function () {
     let bundleTitle = {
