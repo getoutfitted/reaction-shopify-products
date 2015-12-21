@@ -36,6 +36,7 @@ Package.onUse(function (api) {
   api.addFiles('server/methods/importProducts.js', 'server');
   api.addFiles('server/methods/importCSVProducts.js', 'server');
   api.addFiles('server/methods/bundles.js', 'server');
+  api.addFiles('server/methods/bundleUpdater.js');
 
   api.addFiles('common/routes.js');
 
