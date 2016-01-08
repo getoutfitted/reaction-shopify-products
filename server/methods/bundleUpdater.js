@@ -135,7 +135,7 @@ Meteor.methods({
              otgGogglesColor: 'Upland Grass' },
           blackBlack:
            { midlayerId: findProduct('mens-nano-air'),
-             midlayerColor: 'Classic Red',
+             midlayerColor: 'French Red',
              jacketId: findProduct('mens-snowshot-jacket'),
              jacketColor: 'Black',
              pantsId: findProduct('mens-snowshot-pant'),
@@ -191,7 +191,7 @@ Meteor.methods({
       },
       'Women\'s Patagonia Outfit': {
         colorWays: {
-          aquaStoneBlack:
+          aquastoneBlack:
            { midlayerId: findProduct('womens-nano-air'),
              midlayerColor: 'Aqua Stone',
              jacketId: findProduct('womens-insulated-snowbelle'),
