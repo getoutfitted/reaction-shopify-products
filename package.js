@@ -1,7 +1,7 @@
 Package.describe({
   summary: 'Import products from existing Shopify store into ReactionCommerce',
   name: 'getoutfitted:reaction-shopify-products',
-  version: '0.2.0',
+  version: '0.3.0',
   git: 'https://github.com/getoutfitted/reaction-shopify-products'
 });
 
