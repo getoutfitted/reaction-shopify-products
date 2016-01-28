@@ -20,6 +20,7 @@ Package.onUse(function (api) {
   api.use('dburles:factory@0.3.10');
   api.use('getoutfitted:reaction-rental-products@0.1.2');
 
+  api.addFiles('lib/shopifyProducts.js');
   api.addFiles('common/schemas/packageConfig.js'); // Package Config
   api.addFiles('server/register.js', 'server'); // Register as reaction package
 
