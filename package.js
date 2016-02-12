@@ -59,6 +59,5 @@ Package.onTest(function (api) {
   // api.use('reactioncommerce:reaction-factories');
 
   api.use('reactioncommerce:core@0.11.0');
-  // api.use('reactioncommerce:bootstrap-theme');
   api.use('getoutfitted:reaction-shopify-products@0.3.0');
 });
