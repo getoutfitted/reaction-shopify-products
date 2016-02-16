@@ -461,6 +461,22 @@ Meteor.methods({
              otgGogglesId: findProduct('junior-daredevil'),
              otgGogglesColor: 'White' }
         }
+      },
+      'Youth Girl\'s Disney Frozen Outfit': {
+        colorWays: {
+          olafFrozenTrueBlack: {
+            jacketId: findProduct('girls-twist'),
+            jacketColor: 'Olaf Frozen',
+            pantsId: findProduct('girls-lea-pant'),
+            pantsColor: 'Black',
+            glovesId: findProduct('youth-toddler-adrenaline-mitt'),
+            glovesColor: 'Black',
+            stdGogglesId: findProduct('youth-sidekick'),
+            stdGogglesColor: 'Violet Fridays',
+            otgGogglesId: findProduct('youth-sidekick'),
+            otgGogglesColor: 'Violet Fridays'
+          }
+        }
       }
     };
 
