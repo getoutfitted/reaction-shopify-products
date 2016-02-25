@@ -22,7 +22,7 @@
 <template name="dashboardProductBundle">
   {{! context is bundles }}
   <tr style="border-top:2px solid #666;">
-    <a href="{{pathFor 'product-bundle'}}">
+  <a href="{{pathFor 'product-bundle' _id=_id }}">
       <th scope="row">{{title}}</th>
     </a>
     <th>{{hasMidlayer}}</th>

@@ -468,6 +468,7 @@ Meteor.methods({
       return  b.title;
     });
     _.each(bundleTitles, function (title) {
+      console.log('title', title);
       Bundles.update({title: title }, {
         $set: {
           colorWays: bundleTitle[title].colorWays

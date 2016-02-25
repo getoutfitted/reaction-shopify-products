@@ -32,7 +32,7 @@ ReactionCore.registerPackage({
       workflow: 'coreWorkflow'
     },
     {
-      route: '/dashboard/shopify-products/product-bundles/:_id',
+      route: '/dashboard/product-bundles/:_id',
       name: 'product-bundle',
       template: 'dashboardBundleDetail',
       workflow: 'coreWorkflow'
