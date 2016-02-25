@@ -11,9 +11,7 @@ Package.onUse(function (api) {
   api.use('less');
   api.use('http');
   api.use('underscore');
-  api.use('reactioncommerce:core@0.11.0');
-  api.use('reactioncommerce:reaction-accounts@1.6.2');
-  api.use('iron:router@1.0.12');
+  api.use('reactioncommerce:core@0.12.0');
   api.use('momentjs:moment@2.10.6');
   api.use('momentjs:twix@0.7.2');
   api.use('harrison:papa-parse@1.1.1');
@@ -37,7 +35,7 @@ Package.onUse(function (api) {
   api.addFiles('server/methods/bundles.js', 'server');
   api.addFiles('server/methods/bundleUpdater.js');
 
-  api.addFiles('common/routes.js');
+  // api.addFiles('common/routes.js');
 
   api.addFiles('client/templates/settings/settings.html', 'client');
   api.addFiles('client/templates/settings/settings.js', 'client');
@@ -58,6 +56,6 @@ Package.onTest(function (api) {
   api.use('velocity:helpers');
   // api.use('reactioncommerce:reaction-factories');
 
-  api.use('reactioncommerce:core@0.11.0');
+  api.use('reactioncommerce:core@0.12.0');
   api.use('getoutfitted:reaction-shopify-products');
 });

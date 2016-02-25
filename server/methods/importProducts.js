@@ -134,8 +134,11 @@ Meteor.methods({
     if (!ReactionCore.hasPermission('createProduct')) {
       throw new Meteor.Error(403, 'Access Denied');
     }
-
-    const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
+    const shopId = ReactionCore.getShopId();
+    const shopifyCredentials = ReactionCore.Collections.Packages.findOne({
+      name: 'reaction-shopify-products',
+      shopId: shopId
+    }).settings.shopify;
     const Products = ReactionCore.Collections.Products;
     const apikey = shopifyCredentials.key;
     const password = shopifyCredentials.password;
@@ -196,8 +199,11 @@ Meteor.methods({
     if (!ReactionCore.hasPermission('createProduct')) {
       throw new Meteor.Error(403, 'Access Denied');
     }
-
-    const shopifyCredentials = ReactionCore.Collections.Packages.findOne({name: 'reaction-shopify-products'}).settings.shopify;
+    const shopId = ReactionCore.getShopId();
+    const shopifyCredentials = ReactionCore.Collections.Packages.findOne({
+      name: 'reaction-shopify-products',
+      shopId: shopId
+    }).settings.shopify;
     const Bundles = ReactionCore.Collections.Bundles;
     const apikey = shopifyCredentials.key;
     const password = shopifyCredentials.password;
