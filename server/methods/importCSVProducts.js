@@ -1,5 +1,27 @@
-function setupSizeVariants() {
-
+function setupSizeVariants(variant, ancestors) {
+  let prod = {};
+  prod.ancestors = ancestors;
+  // prod.location  = variant.location;
+  prod.optionTitle = 'size';
+  prod.title = variant.size;
+  prod.type = 'variant';
+  prod.isVisible = false;
+  prod.price = parseInt(variant.retailPrice, 10);
+  prod.weight = variant.weight;
+  prod.inventoryQuantity = variant.qty;
+  prod.sku = variant.sku;
+  prod.manufacturerSku = variant.manufacturerSku;
+  let reactionProduct = ReactionCore.Collections.Products.findOne({
+    title: prod.title,
+    ancestors: [ancestors]
+  });
+  let reactionId;
+  if (reactionProduct) {
+    reactionProductId = reactionProduct._id;
+    ReactionCore.Log.warn('Product Variant not inserted into' + prod.title + 'already exists in DB');
+  } else {
+    reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
+  }
 }
 
 function setupColorVariants(color, colorVariants, ancestors) {
@@ -9,12 +31,12 @@ function setupColorVariants(color, colorVariants, ancestors) {
   prod.isVisible = false;
   prod.type = 'variant';
   prod.optionTitle = 'color';
-  prod.title = color.title;
+  prod.title = color.title.trim();
   prod.price = parseInt(color.retailPrice, 10);
-  prod.productType = color.productType;
-  prod.productType = color.productType;
+  prod.productType = color.productType.trim();
+  prod.inventoryQuantity = 100;
   let reactionProduct = ReactionCore.Collections.Products.findOne({
-    title: color.title + '-' + color.color,
+    title: prod.title,
     ancestors: [ancestors]
   });
   let reactionProductId;
@@ -24,9 +46,11 @@ function setupColorVariants(color, colorVariants, ancestors) {
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
   }
-  console.log('ancestors', ancestors);
+
   ancestors.push(reactionProductId);
-  console.log('ancestors222222', ancestors);
+  _.each(colorVariants, function (variant) {
+    setupSizeVariants(variant, ancestors);
+  })
 
 
   // console.log('colorV', prod)
@@ -76,6 +100,8 @@ function setupCSVProductDocument(product, skus) {
   _.each(colorWays, function (colorVariant) {
     setupColorVariants(colorVariant[0], colorVariant, [reactionProductId]);
   });
+
+
 
 
   // Build Sizes object

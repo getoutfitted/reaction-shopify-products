@@ -20,11 +20,6 @@ ReactionCore.Schemas.ShopifiedProducts = new SimpleSchema([
     productType: {
       type: String,
       optional: true
-    },
-    location: {
-      type: Number,
-      optional: true,
-      decimal: true
     }
   }
 ]);

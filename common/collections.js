@@ -8,7 +8,7 @@ ReactionCore.Collections.ShopifyProducts.attachSchema(ReactionCore.Schemas.Shopi
 // ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProductVariant, { selector: { type: 'variant' } });
 
 ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProducts,
-  { selector: { type: "simple" } });
+  { selector: { type: 'simple' } });
 
 ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProductVariant,
-  { selector: { type: "variant" } });
+  { selector: { type: 'variant' } });
