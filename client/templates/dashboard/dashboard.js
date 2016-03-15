@@ -48,7 +48,6 @@ Template.dashboardShopifyProducts.events({
     Papa.parse(event.target.csvImportProductsFile.files[0], {
       header: true,
       complete: function (results) {
-        debugger;
         Meteor.call('importCSVProducts/importProducts', results.data);
       }
     });
