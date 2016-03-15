@@ -15,7 +15,9 @@ Package.onUse(function (api) {
   api.use('momentjs:moment@2.10.6');
   api.use('momentjs:twix@0.7.2');
   api.use('harrison:papa-parse@1.1.1');
-  api.use('getoutfitted:reaction-rental-products@0.3.0');
+  api.use('reactioncommerce:reaction-schemas');
+  api.use('reactioncommerce:reaction-collections');
+  // api.use('getoutfitted:reaction-rental-products@0.3.0');
 
   api.addFiles('lib/shopifyProducts.js');
   api.addFiles('common/schemas/packageConfig.js'); // Package Config
@@ -26,6 +28,7 @@ Package.onUse(function (api) {
   // Schemas
   api.addFiles('common/schemas/shopifyProducts.js');
   api.addFiles('common/schemas/bundles.js');
+  api.addFiles('common/schemas/product.js');
   api.addFiles('common/collections.js');
   api.addFiles('server/publications.js', 'server');
   api.addFiles('server/security.js', 'server');

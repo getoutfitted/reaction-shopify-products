@@ -1,7 +1,8 @@
 Template.shopifyProductsSettings.helpers({
   packageData: function () {
     return ReactionCore.Collections.Packages.findOne({
-      name: 'reaction-shopify-products'
+      name: 'reaction-shopify-products',
+      shopId: ReactionCore.getShopId()
     });
   }
 });
