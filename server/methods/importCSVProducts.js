@@ -26,6 +26,9 @@ function setupSizeVariants(variant, ancestors) {
 
 function setupColorVariants(color, colorVariants, ancestors) {
   let prod = {};
+  let inventory = _.reduce(colorVariants, function (sum, colorVariant) {
+    return sum + parseInt(colorVariant.qty, 10);
+  }, 0);
   prod.ancestors = ancestors;
   prod.color =  color.color;
   prod.isVisible = false;
@@ -34,7 +37,7 @@ function setupColorVariants(color, colorVariants, ancestors) {
   prod.title = color.title.trim();
   prod.price = parseInt(color.retailPrice, 10);
   prod.productType = color.productType.trim();
-  prod.inventoryQuantity = 100;
+  // prod.inventoryQuantity = inventory;
   let reactionProduct = ReactionCore.Collections.Products.findOne({
     title: prod.title,
     ancestors: [ancestors]
@@ -50,10 +53,8 @@ function setupColorVariants(color, colorVariants, ancestors) {
   ancestors.push(reactionProductId);
   _.each(colorVariants, function (variant) {
     setupSizeVariants(variant, ancestors);
-  })
+  });
 
-
-  // console.log('colorV', prod)
 }
 
 function setupCSVProductDocument(product, skus) {
@@ -63,6 +64,20 @@ function setupCSVProductDocument(product, skus) {
   // let sizes = {}; // object of sizes by color; Key is color;
   let colors = []; // array of keys
   prod.price = {};
+  let maxPricedSku = _.max(skus, function (sku) {
+    return parseInt(sku.retailPrice, 10);
+  });
+  let maxPrice = maxPricedSku.retailPrice;
+  let minPricedSku = _.min(skus, function (sku) {
+    return parseInt(sku.retailPrice, 10);
+  });
+  let minPrice = minPricedSku.retailPrice;
+  // Build Color Variant Group
+  let colorWays = _.groupBy(skus, function (sku) {
+    return sku.color;
+  });
+  // Keeping track of colors for Higher level object
+  colors = Object.keys(colorWays);
 
   // Create Product Object;
   prod.ancestors = [];
@@ -77,9 +92,10 @@ function setupCSVProductDocument(product, skus) {
   prod.description = prod.title;
   prod.handle = ImportProducts.handleize(prod.gender + ' ' + prod.title);
   prod.isVisible = false;
-  prod.price.max = product.retailPrice;
-  prod.price.min = product.retailPrice;
-  prod.price.range = prod.price.min + '-' + prod.price.max;
+  prod.price.max = maxPrice;
+  prod.price.min = minPrice;
+  prod.price.range = minPrice + '-' + maxPrice;
+  prod.colors = colors;
 
   let reactionProduct = ReactionCore.Collections.Products.findOne({shopifyId: prod.shopifyId});
   let reactionProductId;
@@ -90,12 +106,6 @@ function setupCSVProductDocument(product, skus) {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'simple'}});
   }
 
-  // Build Color Variant Group
-  let colorWays = _.groupBy(skus, function (sku) {
-    return sku.color;
-  });
-  // Keeping track of colors for Higher level object
-  colors = Object.keys(colorWays);
 
   _.each(colorWays, function (colorVariant) {
     setupColorVariants(colorVariant[0], colorVariant, [reactionProductId]);
