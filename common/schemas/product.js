@@ -29,6 +29,14 @@ ReactionCore.Schemas.ShopifiedProductVariant = new SimpleSchema([
     location: {
       type: String,
       optional: true
+    },
+    color: {
+      type: String,
+      optional: true
+    },
+    size: {
+      type: String,
+      optional: true
     }
   }
 ]);

@@ -1,60 +1,62 @@
-function setupSizeVariants(variant, ancestors) {
+function setupColorVariants(variant, ancestors) {
   let prod = {};
   prod.ancestors = ancestors;
-  // prod.location  = variant.location;
-  prod.optionTitle = 'size';
-  prod.title = variant.size;
+  prod.location  = variant.location;
+  prod.optionTitle = 'color';
+  prod.title = variant.color;
   prod.type = 'variant';
   prod.isVisible = false;
   prod.price = parseInt(variant.retailPrice, 10);
   prod.weight = variant.weight;
   prod.inventoryQuantity = variant.qty;
   prod.sku = variant.sku;
+  prod.color = variant.color;
+  prod.size = variant.size;
   prod.manufacturerSku = variant.manufacturerSku;
   let reactionProduct = ReactionCore.Collections.Products.findOne({
     title: prod.title,
-    ancestors: [ancestors]
-  });
-  let reactionId;
-  if (reactionProduct) {
-    reactionProductId = reactionProduct._id;
-    ReactionCore.Log.warn('Product Variant not inserted into' + prod.title + 'already exists in DB');
-  } else {
-    reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
-  }
-}
-
-function setupColorVariants(color, colorVariants, ancestors) {
-  let prod = {};
-  let inventory = _.reduce(colorVariants, function (sum, colorVariant) {
-    return sum + parseInt(colorVariant.qty, 10);
-  }, 0);
-  prod.ancestors = ancestors;
-  prod.color =  color.color;
-  prod.isVisible = false;
-  prod.type = 'variant';
-  prod.optionTitle = 'color';
-  prod.title = color.title.trim();
-  prod.price = parseInt(color.retailPrice, 10);
-  prod.productType = color.productType.trim();
-  // prod.inventoryQuantity = inventory;
-  let reactionProduct = ReactionCore.Collections.Products.findOne({
-    title: prod.title,
-    ancestors: [ancestors]
+    ancestors: ancestors
   });
   let reactionProductId;
   if (reactionProduct) {
     reactionProductId = reactionProduct._id;
-    ReactionCore.Log.warn('Product Variant not inserted into' + prod.title + 'already exists in DB');
+    ReactionCore.Log.warn(variant.vendor + ' ' + variant.title + '-' + variant.size + ' ' + prod.title + ' has already been added');
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
+    ReactionCore.Log.info(variant.vendor + ' ' + variant.title + '-' + variant.size + ' ' + prod.title + ' was successfully added');
+  }
+}
+
+function setupSizeVariants(size, sizeVariants, ancestors) {
+  let prod = {};
+  let inventory = _.reduce(sizeVariants, function (sum, sizeVariant) {
+    return sum + parseInt(sizeVariant.qty, 10);
+  }, 0);
+  prod.ancestors = ancestors;
+  prod.isVisible = false;
+  prod.type = 'variant';
+  prod.optionTitle = 'size';
+  prod.title = size.size.trim();
+  prod.price = parseInt(size.retailPrice, 10);
+  prod.productType = size.productType.trim();
+  prod.inventoryQuantity = inventory;
+  let reactionProduct = ReactionCore.Collections.Products.findOne({
+    title: prod.title,
+    ancestors: ancestors
+  });
+  let reactionProductId;
+  if (reactionProduct) {
+    reactionProductId = reactionProduct._id;
+    ReactionCore.Log.warn(size.vendor + ' ' + size.title + '-' + prod.title + ' has already been added.');
+  } else {
+    reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
+    ReactionCore.Log.info(size.vendor + ' ' + size.title + '-' + prod.title + ' was successfully added to Products.');
   }
 
   ancestors.push(reactionProductId);
-  _.each(colorVariants, function (variant) {
-    setupSizeVariants(variant, ancestors);
+  _.each(sizeVariants, function (variant) {
+    setupColorVariants(variant, ancestors);
   });
-
 }
 
 function setupCSVProductDocument(product, skus) {
@@ -63,6 +65,7 @@ function setupCSVProductDocument(product, skus) {
   let prod = {}; // init empty object to hold new product.
   // let sizes = {}; // object of sizes by color; Key is color;
   let colors = []; // array of keys
+  let sizes = [];
   prod.price = {};
   let maxPricedSku = _.max(skus, function (sku) {
     return parseInt(sku.retailPrice, 10);
@@ -78,7 +81,11 @@ function setupCSVProductDocument(product, skus) {
   });
   // Keeping track of colors for Higher level object
   colors = Object.keys(colorWays);
-
+  let sizeWays = _.groupBy(skus, function (sku) {
+    return sku.size;
+  });
+  // Keeping track of colors for Higher level object
+  sizes = Object.keys(sizeWays);
   // Create Product Object;
   prod.ancestors = [];
   prod.colors = [];
@@ -96,19 +103,24 @@ function setupCSVProductDocument(product, skus) {
   prod.price.min = minPrice;
   prod.price.range = minPrice + '-' + maxPrice;
   prod.colors = colors;
+  prod.sizes = sizes;
 
-  let reactionProduct = ReactionCore.Collections.Products.findOne({shopifyId: prod.shopifyId});
+  let reactionProduct = ReactionCore.Collections.Products.findOne({
+    title: prod.title,
+    ancestors: prod.ancestors
+  });
   let reactionProductId;
   if (reactionProduct) {
     reactionProductId = reactionProduct._id;
-    ReactionCore.Log.warn('Product not inserted into' + prod.title + 'already exists in DB');
+    ReactionCore.Log.warn(prod.vendor + ' ' + prod.title + ' has already been added.');
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'simple'}});
+    ReactionCore.Log.info(prod.vendor + ' ' + prod.title + ' was successfully added to Products.');
+
   }
 
-
-  _.each(colorWays, function (colorVariant) {
-    setupColorVariants(colorVariant[0], colorVariant, [reactionProductId]);
+  _.each(sizeWays, function (sizeVariant) {
+    setupSizeVariants(sizeVariant[0], sizeVariant, [reactionProductId]);
   });
 }
 
