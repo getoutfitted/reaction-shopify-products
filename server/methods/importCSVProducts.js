@@ -20,6 +20,7 @@ function setupColorVariants(variant, ancestors) {
   let reactionProductId;
   if (reactionProduct) {
     reactionProductId = reactionProduct._id;
+    ReactionCore.Log.warn('Found product = ' + reactionProductId);
     ReactionCore.Log.warn(variant.vendor + ' ' + variant.title + '-' + variant.size + ' ' + prod.title + ' has already been added');
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
@@ -47,6 +48,7 @@ function setupSizeVariants(size, sizeVariants, ancestors) {
   let reactionProductId;
   if (reactionProduct) {
     reactionProductId = reactionProduct._id;
+    ReactionCore.Log.warn('Found product = ' + reactionProductId);
     ReactionCore.Log.warn(size.vendor + ' ' + size.title + '-' + prod.title + ' has already been added.');
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'variant'}});
@@ -57,6 +59,13 @@ function setupSizeVariants(size, sizeVariants, ancestors) {
   _.each(sizeVariants, function (variant) {
     setupColorVariants(variant, ancestors);
   });
+}
+
+function findOrCreateTag(product) {
+  let tags = [];
+  tags.push(ReactionCore.Collections.Tags.upsert(product.gender));
+  tags.push(ReactionCore.Collections.Tags.upsert(product.vendor));
+  return tags;
 }
 
 function setupCSVProductDocument(product, skus) {
@@ -86,7 +95,7 @@ function setupCSVProductDocument(product, skus) {
   });
   // Keeping track of colors for Higher level object
   sizes = Object.keys(sizeWays);
-  // Create Product Object;
+  // Create Product Object;let tags = findOrCreateTag(product);
   prod.ancestors = [];
   prod.colors = [];
   prod.shopId = ReactionCore.getShopId();
@@ -104,24 +113,29 @@ function setupCSVProductDocument(product, skus) {
   prod.price.range = minPrice + '-' + maxPrice;
   prod.colors = colors;
   prod.sizes = sizes;
-
   let reactionProduct = ReactionCore.Collections.Products.findOne({
     title: prod.title,
-    ancestors: prod.ancestors
+    vendor: prod.vendor,
+    gender: prod.gender
   });
   let reactionProductId;
   if (reactionProduct) {
     reactionProductId = reactionProduct._id;
+    ReactionCore.Log.warn('Found product = ' + reactionProductId);
     ReactionCore.Log.warn(prod.vendor + ' ' + prod.title + ' has already been added.');
   } else {
     reactionProductId = ReactionCore.Collections.Products.insert(prod, {selector: {type: 'simple'}});
     ReactionCore.Log.info(prod.vendor + ' ' + prod.title + ' was successfully added to Products.');
-
   }
 
   _.each(sizeWays, function (sizeVariant) {
     setupSizeVariants(sizeVariant[0], sizeVariant, [reactionProductId]);
   });
+  if (!reactionProduct) {
+    Meteor.call('products/updateProductTags', reactionProductId, prod.gender, null);
+    Meteor.call('products/updateProductTags', reactionProductId, prod.productType, null);
+    Meteor.call('products/updateProductTags', reactionProductId, prod.vendor, null);
+  }
 }
 
 Meteor.methods({

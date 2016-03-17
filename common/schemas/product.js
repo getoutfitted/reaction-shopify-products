@@ -20,6 +20,10 @@ ReactionCore.Schemas.ShopifiedProducts = new SimpleSchema([
     productType: {
       type: String,
       optional: true
+    },
+    gender: {
+      type: String,
+      optional: true
     }
   }
 ]);

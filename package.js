@@ -17,6 +17,7 @@ Package.onUse(function (api) {
   api.use('harrison:papa-parse@1.1.1');
   api.use('reactioncommerce:reaction-schemas');
   api.use('reactioncommerce:reaction-collections');
+  api.use('reactioncommerce:reaction-catalog');
   // api.use('getoutfitted:reaction-rental-products@0.3.0');
 
   api.addFiles('lib/shopifyProducts.js');
