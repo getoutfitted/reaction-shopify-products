@@ -1,5 +1,5 @@
 Template.dashboardBundleDetail.onCreated(function () {
-  this.subscribe('ShopifyProducts/Bundle', Router.current().params._id);
+  this.subscribe('ShopifyProducts/Bundle', ReactionRouter.current().params._id);
 });
 
 Template.dashboardBundleDetail.helpers({
@@ -12,6 +12,7 @@ Template.dashboardBundleDetail.helpers({
     return Object.keys(bundle.colorWays);
   }
 });
+
 
 Template.dashboardBundleSettings.inheritsHelpersFrom('dashboardBundleDetail');
 

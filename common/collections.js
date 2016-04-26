@@ -3,3 +3,12 @@ ReactionCore.Collections.ShopifyProducts = ShopifyProducts = this.ShopifyProduct
 
 ReactionCore.Collections.Bundles.attachSchema(ReactionCore.Schemas.Bundles);
 ReactionCore.Collections.ShopifyProducts.attachSchema(ReactionCore.Schemas.ShopifyProducts);
+// ReactionCore.Collections.ShopifyProducts.attachSchema(ReactionCore.Schemas.ShopifyProducts);
+// ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProducts, { selector: { type: 'simple' } });
+// ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProductVariant, { selector: { type: 'variant' } });
+
+ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProducts,
+  { selector: { type: 'simple' } });
+
+ReactionCore.Collections.Products.attachSchema(ReactionCore.Schemas.ShopifiedProductVariant,
+  { selector: { type: 'variant' } });

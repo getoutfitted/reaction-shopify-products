@@ -5,7 +5,8 @@ Template.dashboardShopifyProducts.onCreated(function () {
 Template.dashboardShopifyProducts.helpers({
   apiConfigured: function () {
     let shopifyProducts = ReactionCore.Collections.Packages.findOne({
-      name: 'reaction-shopify-products'
+      name: 'reaction-shopify-products',
+      shopId: ReactionCore.getShopId()
     });
     if (!shopifyProducts.settings) {
       return false;
